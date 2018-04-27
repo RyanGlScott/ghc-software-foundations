@@ -5,8 +5,6 @@
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wall #-}
-{-# OPTIONS_GHC -Wno-unticked-promoted-constructors #-}
 module SF.Induction where
 
 import Data.Nat
@@ -24,15 +22,15 @@ plusNSm :: forall (n :: Nat) (m :: Nat).
 plusNSm SZ _ = Refl
 plusNSm (SS sn) sm | Refl <- plusNSm sn sm = Refl
 
+plus0R :: forall (n :: Nat).
+          Sing n -> n + Lit 0 :~: n
+plus0R SZ = Refl
+plus0R (SS sn) | Refl <- plus0R sn = Refl
+
 plusComm :: forall (n :: Nat) (m :: Nat).
             Sing n -> Sing m
          -> n + m :~: m + n
 plusComm SZ sm | Refl <- plus0R sm = Refl
-  where
-    plus0R :: forall (n1 :: Nat).
-              Sing n1 -> n1 + Lit 0 :~: n1
-    plus0R SZ = Refl
-    plus0R (SS sn) | Refl <- plus0R sn = Refl
 plusComm (SS sn) sm | Refl <- plusComm sn sm
                     , Refl <- plusNSm sm sn
                     = Refl
