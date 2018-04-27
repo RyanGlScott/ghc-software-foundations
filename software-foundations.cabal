@@ -1,0 +1,30 @@
+name:                software-foundations
+version:             0.1
+synopsis:            The Software Foundations book, in GHC
+description:         The Software Foundations book, in GHC.
+homepage:            https://github.com/RyanGlScott/ghc-software-foundations
+bug-reports:         https://github.com/RyanGlScott/ghc-software-foundations/issues
+license:             BSD3
+license-file:        LICENSE
+author:              Ryan Scott
+maintainer:          Ryan Scott <ryan.gl.scott@gmail.com>
+copyright:           (C) 2018 Ryan Scott
+stability:           Experimental
+category:            Dependent Types
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+tested-with:         GHC == 8.4.2
+
+library
+  exposed-modules:     SF.Basics
+                       SF.Induction
+                       SF.Lists
+                       SF.Logic
+                       SF.Poly
+  build-depends:       base           >= 4.11 && < 4.12
+                     , singletons     >= 2.4.1 && < 2.5
+                     , singleton-nats >= 0.4.0.4 && < 0.5
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  ghc-options:         -Wall
