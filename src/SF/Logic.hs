@@ -157,40 +157,33 @@ type family All (p :: t ~> Prop) (l :: [t]) :: Prop where
   All _ '[] = ()
   All p (x:xs) = (p @@ x, All p xs)
 
+-- Must chunk up to avoid impredicativity
 
-{-
 allIn1 :: forall (t :: Type) (p :: t ~> Prop) (l :: [t]).
           Sing p -> Sing l
-       -> (forall z. In z l -> p @@ z) -> All p l
+          -- That Proxy is ugly, but I don't know how to avoid it...
+       -> (forall z. Proxy z -> In z l -> p @@ z) -> All p l
 allIn1 _  SNil _ = ()
-allIn1 sP (SCons (_ :: Sing x) (sls :: Sing xs)) ip
-  = (px, apx) -- (\(x :: In z xs) -> ip @z (Right x :: In z l) :: p @@ z))
+allIn1 sP (SCons (_ :: Sing x) (sls :: Sing xs)) ip = (px, apx)
   where
     px :: p @@ x
-    px = ip (Left Refl)
+    px = ip @x Proxy (Left Refl)
 
     apx :: All p xs
-    apx = allIn1 sP sls (\(x :: In z xs) -> wat @z x)
+    apx = allIn1 sP sls wat
 
-    wat :: forall z. In z xs -> p @@ z
-    wat = undefined
--}
+    wat :: forall z. Proxy z -> In z xs -> p @@ z
+    wat p = ip @z p . Right
 
-{-
 allIn2 :: forall (t :: Type) (p :: t ~> Prop) (l :: [t]) (z :: t).
           Sing p -> Sing l
-       -> All p l -- -> (forall (z :: t). In z l -> p @@ z)
+       -> All p l
        -> In z l -> p @@ z
 allIn2 _ SNil () x = absurd x
-allIn2 sP (SCons _ (sls :: Sing ls)) (px, apx) i
+allIn2 sP (SCons _ (sls :: Sing xs)) (px, apx) i
   = case i of
-      Left Refl -> px
-      Right (i' :: In z ls) ->
-        case allIn2 sP sls apx i' of
-          _ -> _
--}
-
--- TODO RGS
+      Left Refl             -> px
+      Right (i' :: In z xs) -> allIn2 @t @p @xs @z sP sls apx i'
 
 $(singletons [d|
   oddb :: Nat -> Bool
@@ -388,15 +381,17 @@ forallbTrueIff sTest sl = (nec sl, suf sl)
     suf SNil () = Refl
     suf (SCons _ szs) (Refl, a) = suf szs a
 
--- TODO RGS
+type ExcludedMiddle = forall (p :: Prop). p \/ Not p
 
 excludedMiddleIrrefutable :: forall (p :: Prop).
   Not (Not (Either p (Not p)))
 excludedMiddleIrrefutable nne = nne $ Right $ nne . Left
 
-excludedMiddle :: forall (p :: Prop).
-  Either p (Not p)
-excludedMiddle = excludedMiddle
+notExistsDist :: forall (x :: Type) (p :: x ~> Prop) (xx :: x). SingI xx =>
+                 ExcludedMiddle -> Not (Sigma x (NotSym0 .@#@$$$ p))
+              -> p @@ xx
+notExistsDist excludedMiddle ns =
+  either id (absurd . ns . (:&:) (sing @x @xx)) $ excludedMiddle @(p @@ xx)
 
 -- TODO RGS
 
@@ -471,5 +466,3 @@ type DeMorganNotAndNot = forall (p :: Prop) (q :: Prop). Not (Not p /\ Not q) ->
 
 type ImpliesToOr = forall (p :: Prop) (q :: Prop). (p -> q) -> (Not p \/ q)
 -}
-
--- TODO RGS
