@@ -420,3 +420,56 @@ oneToThree peirce deMorgan
   = absurd $ deMorgan (peirce _)
   -- = peirce $ \(pqr :: _) -> pqr (absurd $ deMorgan _)
 -}
+
+threeToOne :: DeMorganNotAndNot -> Peirce
+threeToOne deMorgan peirce
+  = either id id $ deMorgan $ \(np, nq) -> np $ peirce $ absurd . nq
+
+{-
+oneToFour :: Peirce -> ImpliesToOr
+oneToFour peirce impliesToOr
+  =
+-}
+
+{-
+fourToOne :: ImpliesToOr -> Peirce
+fourToOne impliesToOr peirce = either peirce _ $ impliesToOr _
+-}
+
+twoToThree :: DoubleNegationElimination -> DeMorganNotAndNot
+twoToThree dne deMorgan = dne $ \nPorQ -> deMorgan (nPorQ . Left, nPorQ . Right)
+
+threeToTwo :: DeMorganNotAndNot -> DoubleNegationElimination
+threeToTwo deMorgan dne = either id id $ deMorgan $ dne . fst
+
+twoToFour :: DoubleNegationElimination -> ImpliesToOr
+twoToFour dne impliesToOr
+  = dne $ \nNpOrQ -> nNpOrQ $ Left $ nNpOrQ . Right . impliesToOr
+
+{-
+fourToTwo :: ImpliesToOr -> DoubleNegationElimination
+fourToTwo impliesToOr dne
+  = case impliesToOr (\wat -> dne $ \p -> wat p) of
+      Left (nnp :: _) -> absurd $ nnp $ \(_ :: _) -> _
+      Right y -> absurd y
+-}
+
+threeToFour :: DeMorganNotAndNot -> ImpliesToOr
+threeToFour deMorgan impliesToOr = deMorgan $ \(nnp, nq) -> nnp $ nq .impliesToOr
+
+{-
+fourToThree :: ImpliesToOr -> DeMorganNotAndNot
+fourToThree impliesToOr deMorgan = absurd $ deMorgan $ _ $ impliesToOr _
+-}
+
+{-
+type Peirce = forall (p :: Prop) (q :: Prop). ((p -> q) -> p) -> p
+
+type DoubleNegationElimination = forall (p :: Prop). Not (Not p) -> p
+
+type DeMorganNotAndNot = forall (p :: Prop) (q :: Prop). Not (Not p /\ Not q) -> p \/ q
+
+type ImpliesToOr = forall (p :: Prop) (q :: Prop). (p -> q) -> (Not p \/ q)
+-}
+
+-- TODO RGS
