@@ -259,6 +259,21 @@ evenbDoubleConv (SS sn)
       STrue -> sn' :&: Refl
       SFalse -> SS sn' :&: Refl
 
+{-
+-- TODO RGS
+
+beqNatTrueIff :: forall (n1 :: Nat) (n2 :: Nat).
+                 Sing n1 -> Sing n2
+              -> ((n1 == n2) :~: True) <-> n1 :~: n2
+beqNatTrueIff sn1 sn2 = (nec, suf)
+  where
+    nec :: ((n1 == n2) :~: True) -> n1 :~: n2
+    nec = undefined
+
+    suf :: n1 :~: n2 -> ((n1 == n2) :~: True)
+    suf = undefined
+-}
+
 type EBPAux (n :: Nat) (k :: Nat) = n :~: Double k
 $(genDefunSymbols [''EBPAux])
 
