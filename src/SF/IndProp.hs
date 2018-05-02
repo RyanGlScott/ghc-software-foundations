@@ -1,6 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE EmptyCase #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -16,12 +17,13 @@ import Data.Nat
 import Data.Singletons.Prelude hiding (Not, POrd(..))
 import Data.Singletons.Sigma
 import Data.Singletons.TH (genDefunSymbols, singletons)
-import Data.Type.Equality
+import Data.Type.Equality ((:~:)(..))
+import Data.Void
 import Prelude hiding (Double)
 import SF.Basics
 import SF.Induction
 import SF.Logic
-import SF.Poly (appAssoc, Fold) -- Length)
+import SF.Poly (appAssoc, Fold)
 
 data Ev :: Nat -> Prop where
   Ev0  :: Ev Z
@@ -297,7 +299,8 @@ data ExpMatch :: forall (t :: Type). [t] -> RegExp t -> Prop where
   MUnionR  :: ExpMatch s2 re2
            -> ExpMatch s2 (Union re1 re2)
   MStar0   :: ExpMatch '[] (Star re)
-  MStarApp :: ExpMatch s1 re
+  MStarApp :: Sing s1
+           -> ExpMatch s1 re
            -> ExpMatch s2 (Star re)
            -> ExpMatch (s1 ++ s2) (Star re)
 
@@ -316,15 +319,14 @@ mUnion' = either MUnionL MUnionR
 
 
 mStar' :: forall (t :: Type) (ss :: [[t]]) (re :: RegExp t).
-          Sing ss
-       -- Uncomment below for a GHC 8.4.1 panic
-       -- -> (forall (s :: _). In s ss -> s =~ re)
+          Sing ss -> Sing re
        -> (forall (s :: [t]). In s ss -> s =~ re)
        -> Fold (++@#@$) ss '[] =~ Star re
-mStar' SNil _ = MStar0
-mStar' (SCons _ sxs) f
-  = MStarApp (f $ Left Refl)
-             (mStar' sxs $ f . Right)
+mStar' SNil _ _ = MStar0
+mStar' (SCons sx sxs) sre f
+  = MStarApp sx
+             (f $ Left Refl)
+             (mStar' sxs sre $ f . Right)
 
 $(singletons [d|
   regExpOfList :: [t] -> RegExp t
@@ -410,14 +412,21 @@ newtype MStar''Aux2 (re :: RegExp t) (ss :: [[t]])
   = MkMStar''Aux2 { runMStar''Aux2 :: forall (s' :: [t]). In s' ss -> s' =~ re }
 $(genDefunSymbols [''MStar''Aux1])
 
-{-
 mStar'' :: forall (t :: Type) (s :: [t]) (re :: RegExp t).
            Sing re
         -> s =~ Star re
         -> Sigma [[t]] (MStar''Aux1Sym2 s re)
--}
-
--- TODO RGS
+mStar'' _ MStar0
+  = SNil :&: (Refl, MkMStar''Aux2 absurd)
+mStar'' sre (MStarApp s1 em1 em2)
+  = case mStar'' sre em2 of
+      s2 :&: (Refl, aux) ->
+        SCons s1 s2 :&: ( Refl
+                        , MkMStar''Aux2 $
+                            \case
+                               Left  Refl -> em1
+                               Right i    -> runMStar''Aux2 aux i
+                        )
 
 $(singletons [d|
   pumpingConstant :: RegExp t -> Nat
@@ -453,10 +462,86 @@ $(genDefunSymbols [''PumpingAux1])
 
 {-
 pumping :: forall (t :: Type) (re :: RegExp t) (s :: [t]).
-           s =~ re
+           Sing re
+        -> s =~ re
         -> PumpingConstant re <= Length s
         -> Sigma ([t], [t], [t]) (PumpingAux1Sym2 re s)
-pumping = undefined
+pumping SEmptySet em     _        = case em of {}
+pumping SEmptyStr MEmpty le       = case le of {}
+pumping (SChar _) MChar  (LeS le) = case le of {}
+{-
+pumping (SApp sre1 sre2) (MApp s1 s2 (em1 :: s1 =~ re1) (em2 :: s2 =~ re2)) le
+  | Refl <- appLength s1 s2
+  = undefined
+-}
+pumping (SUnion sre1 sre2) (MUnionL (em :: s =~ re1)) le
+  = let lemma1 :: PumpingConstant re1 <= PumpingConstant re
+        lemma1 = lePlusL (sPumpingConstant sre1) (sPumpingConstant sre2)
+
+        lemma2 :: PumpingConstant re1 <= Length s
+        lemma2 = leTrans lemma1 le
+    in case pumping sre1 em lemma2 of
+         s123@STuple3{} :&: (x, (y, aux))
+                -> s123 :&: (x, (y, MkPumpingAux2 $ MUnionL . runPumpingAux2 aux))
+pumping (SUnion sre1 sre2) (MUnionR (em :: s =~ re2)) le
+  = let lemma1 :: PumpingConstant re2 <= PumpingConstant re
+        lemma1 = lePlusR (sPumpingConstant sre1) (sPumpingConstant sre2)
+
+        lemma2 :: PumpingConstant re2 <= Length s
+        lemma2 = leTrans lemma1 le
+    in case pumping sre2 em lemma2 of
+         s123@STuple3{} :&: (x, (y, aux))
+                -> s123 :&: (x, (y, MkPumpingAux2 $ MUnionR . runPumpingAux2 aux))
+pumping (SStar _) MStar0 le = case le of {}
+{-
+pumping (SStar _) (MStarApp _ em1 em2) le
+  = let
+     in _ $ pumping
+-}
+-}
+
+-- TODO RGS
+
+data Reflect :: Prop -> Bool -> Prop where
+  ReflectT ::     p -> Reflect p True
+  ReflectF :: Not p -> Reflect p False
+
+iffReflect :: forall (p :: Prop) (b :: Bool).
+              Sing b
+           -> (p <-> b :~: True) -> Reflect p b
+iffReflect STrue  (_,   suf) = ReflectT $ suf Refl
+iffReflect SFalse (nec, _)   = ReflectF $ \case . nec
+
+reflectIff :: forall (p :: Prop) (b :: Bool).
+              Reflect p b -> (p <-> b :~: True)
+reflectIff (ReflectT p)  = (const Refl, const p)
+reflectIff (ReflectF np) = (absurd . np, \case)
+
+$(singletons [d|
+  count :: Nat -> [Nat] -> Nat
+  count _ [] = 0
+  count n (m:l') = (if n < m then 1 else 0) + count n l'
+  |])
+
+{-
+beqNatP :: forall (n :: Nat) (m :: Nat).
+           Sing n -> Sing m
+        -> Reflect (n :~: m) (n == m)
+beqNatP sn sm = iffReflect (sn %== sm) (\Refl -> beqNatRefl sn, \Refl -> Refl)
+-}
+
+{-
+beqNatPPractice :: forall (n :: Nat) (l :: [Nat]).
+                   Sing n -> Sing l
+                -> Count n l :~: Z -> Not (In n l)
+beqNatPPractice _ SNil Refl i = i
+beqNatPPractice sn (SCons sl sls) r i
+  = case sn %< sl of
+      STrue -> case r of {}
+      SFalse ->
+        case i of
+          Left Refl -> beqNatPPractice sn sls Refl _
+          Right i' -> beqNatPPractice sn sls _ i'
 -}
 
 -- TODO RGS
