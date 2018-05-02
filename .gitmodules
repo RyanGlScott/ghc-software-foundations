@@ -1,3 +1,0 @@
-[submodule "singleton-nats"]
-	path = singleton-nats
-	url = https://github.com/AndrasKovacs/singleton-nats

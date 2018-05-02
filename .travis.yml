@@ -8,7 +8,7 @@ language: c
 sudo: false
 
 git:
-  submodules: true  # whether to recursively clone submodules
+  submodules: false  # whether to recursively clone submodules
 
 cache:
   directories:
@@ -75,21 +75,16 @@ install:
       cabal new-update head.hackage -v
     fi
   - grep -Ev -- '^\s*--' ${HOME}/.cabal/config | grep -Ev '^\s*$'
-  - "printf 'packages: \".\" \"./singleton-nats\"\\n' > cabal.project"
+  - "printf 'packages: \".\"\\n' > cabal.project"
   - echo 'package software-foundations' >> cabal.project
-  - "echo '  ghc-options: -Werror' >> cabal.project"
-  - echo 'package singleton-nats' >> cabal.project
   - "echo '  ghc-options: -Werror' >> cabal.project"
   - cat cabal.project
   - if [ -f "./configure.ac" ]; then
       (cd "." && autoreconf -i);
     fi
-  - if [ -f "./singleton-nats/configure.ac" ]; then
-      (cd "./singleton-nats" && autoreconf -i);
-    fi
   - rm -f cabal.project.freeze
   - cabal new-build -w ${HC} ${TEST} ${BENCH} --project-file="cabal.project" --dep -j2 all
-  - rm -rf .ghc.environment.* "."/dist "./singleton-nats"/dist
+  - rm -rf .ghc.environment.* "."/dist
   - DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
 
 # Here starts the actual work to be performed for the package under test;
@@ -97,14 +92,11 @@ install:
 script:
   # test that source-distributions can be generated
   - (cd "." && cabal sdist)
-  - (cd "./singleton-nats" && cabal sdist)
-  - mv "."/dist/software-foundations-*.tar.gz "./singleton-nats"/dist/singleton-nats-*.tar.gz ${DISTDIR}/
+  - mv "."/dist/software-foundations-*.tar.gz ${DISTDIR}/
   - cd ${DISTDIR} || false
   - find . -maxdepth 1 -name '*.tar.gz' -exec tar -xvf '{}' \;
-  - "printf 'packages: software-foundations-*/*.cabal singleton-nats-*/*.cabal\\n' > cabal.project"
+  - "printf 'packages: software-foundations-*/*.cabal\\n' > cabal.project"
   - echo 'package software-foundations' >> cabal.project
-  - "echo '  ghc-options: -Werror' >> cabal.project"
-  - echo 'package singleton-nats' >> cabal.project
   - "echo '  ghc-options: -Werror' >> cabal.project"
   - cat cabal.project
 
@@ -114,7 +106,6 @@ script:
 
   # cabal check
   - (cd software-foundations-* && cabal check)
-  - (cd singleton-nats-* && cabal check)
 
   # haddock
   - rm -rf ./dist-newstyle
