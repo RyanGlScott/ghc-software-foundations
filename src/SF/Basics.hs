@@ -51,6 +51,11 @@ testAndb34 :: Andb3 True True False :~: False
 testAndb34 = Refl
 
 $(singletons [d|
+  minustwo :: Nat -> Nat
+  minustwo Z         = Z
+  minustwo (S Z)     = Z
+  minustwo (S (S n)) = n
+
   factorial :: Nat -> Nat
   factorial Z        = S Z
   factorial sn@(S n) = sn * factorial n

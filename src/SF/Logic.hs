@@ -183,13 +183,6 @@ allIn2 sP (SCons _ (sls :: Sing xs)) (px, apx) i
       Left Refl             -> px
       Right (i' :: In z xs) -> allIn2 @t @p @xs @z sP sls apx i'
 
-$(singletons [d|
-  oddb :: Nat -> Bool
-  oddb Z         = False
-  oddb (S Z)     = True
-  oddb (S (S n)) = oddb n
-  |])
-
 type CombineOddEven (podd :: Nat ~> Prop) (peven :: Nat ~> Prop) (n :: Nat)
   = If (Oddb n) (podd @@ n) (peven @@ n)
 

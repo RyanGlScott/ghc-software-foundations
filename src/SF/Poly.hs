@@ -64,11 +64,14 @@ revInvolutive (SCons sl sls) | Refl <- revInvolutive sls
                              = Refl
 
 $(singletons [d|
+  combine :: [x] -> [y] -> [(x, y)]
+  combine = zip
+
   split :: [(x,y)] -> ([x],[y])
   split [] = ([], [])
   split ((a,b):zs) =
-    let (as,bs) = split zs
-    in (a:as, b:bs)
+    case split zs of
+      (as,bs) -> (a:as, b:bs)
   |])
 
 testSplit :: Split '[ '(1,False), '(2,False) ] :~: '( '[1,2], '[False,False] )
@@ -78,6 +81,11 @@ $(singletons [d|
   data Option x
     = Some x
     | None
+
+  nthError :: [x] -> Nat -> Option x
+  nthError []     _      = None
+  nthError (a:_)  Z      = Some a
+  nthError (_:l') (S n') = nthError l' n'
 
   hdError :: [x] -> Option x
   hdError []    = None
@@ -100,11 +108,6 @@ testFilterEvenGt7_1 = Refl
 
 testFilterEvenGt7_2 :: FilterEvenGt7 (Map LitSym0 '[5,2,6,19,129]) :~: '[]
 testFilterEvenGt7_2 = Refl
-
-$(singletons [d|
-  oddb :: Nat -> Bool
-  oddb x = not (evenb x)
-  |])
 
 testPartition1 :: Partition OddbSym0 (Map LitSym0 '[1,2,3,4,5]) :~:
                   '(Map LitSym0 '[1,3,5], Map LitSym0 '[2,4])

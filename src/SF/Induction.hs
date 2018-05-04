@@ -19,7 +19,7 @@ mult0R (SS sn) | Refl <- mult0R sn = Refl
 plusNSm :: forall (n :: Nat) (m :: Nat).
            Sing n -> Sing m
         -> S (n + m) :~: n + S m
-plusNSm SZ _ = Refl
+plusNSm SZ      _  = Refl
 plusNSm (SS sn) sm | Refl <- plusNSm sn sm = Refl
 
 plus0R :: forall (n :: Nat).
@@ -59,6 +59,11 @@ $(singletons [d|
   evenb Z = True
   evenb (S Z) = False
   evenb (S (S n)) = evenb n
+
+  oddb :: Nat -> Bool
+  oddb Z         = False
+  oddb (S Z)     = True
+  oddb (S (S n)) = oddb n
   |])
 
 evenbS :: forall (n :: Nat). Sing n
