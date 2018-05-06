@@ -71,3 +71,8 @@ evenbS :: forall (n :: Nat). Sing n
 evenbS SZ = Refl
 evenbS (SS SZ) = Refl
 evenbS (SS (SS sn)) | Refl <- evenbS sn = Refl
+
+beqNatRefl :: forall (n :: Nat). Sing n
+           -> (n == n) :~: True
+beqNatRefl SZ = Refl
+beqNatRefl (SS sn) | Refl <- beqNatRefl sn = Refl

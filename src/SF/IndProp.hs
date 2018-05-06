@@ -17,6 +17,7 @@ import Data.Nat
 import Data.Singletons.Prelude hiding (Not, POrd(..))
 import Data.Singletons.Sigma
 import Data.Singletons.TH (genDefunSymbols, singletons)
+import Data.Tuple
 import Data.Type.Equality ((:~:)(..))
 import Data.Void
 import Prelude hiding (Double)
@@ -520,28 +521,23 @@ reflectIff (ReflectF np) = (absurd . np, \case)
 $(singletons [d|
   count :: Nat -> [Nat] -> Nat
   count _ [] = 0
-  count n (m:l') = (if n < m then 1 else 0) + count n l'
+  count n (m:l') = (if n == m then 1 else 0) + count n l'
   |])
 
-{-
 beqNatP :: forall (n :: Nat) (m :: Nat).
            Sing n -> Sing m
         -> Reflect (n :~: m) (n == m)
-beqNatP sn sm = iffReflect (sn %== sm) (\Refl -> beqNatRefl sn, \Refl -> Refl)
--}
+beqNatP sn sm = iffReflect (sn %== sm) $ swap $ beqNatTrueIff sn sm
 
-{-
 beqNatPPractice :: forall (n :: Nat) (l :: [Nat]).
                    Sing n -> Sing l
                 -> Count n l :~: Z -> Not (In n l)
 beqNatPPractice _ SNil Refl i = i
-beqNatPPractice sn (SCons sl sls) r i
-  = case sn %< sl of
-      STrue -> case r of {}
-      SFalse ->
+beqNatPPractice sn (SCons sx sxs) Refl i
+  = case beqNatP sn sx of
+      ReflectF ne ->
         case i of
-          Left Refl -> beqNatPPractice sn sls Refl _
-          Right i' -> beqNatPPractice sn sls _ i'
--}
+          Left Refl -> ne Refl
+          Right i' -> beqNatPPractice sn sxs Refl i'
 
 -- TODO RGS

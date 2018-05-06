@@ -18,8 +18,9 @@ import Data.Singletons.Prelude hiding
 import Data.Singletons.Sigma
 import Data.Singletons.TH
 import Data.Void
-import SF.Induction
 import Prelude hiding (Double)
+import SF.Induction
+import SF.Tactics
 
 type Prop = Type -- lol
 type Not a = a -> Void
@@ -252,20 +253,16 @@ evenbDoubleConv (SS sn)
       STrue -> sn' :&: Refl
       SFalse -> SS sn' :&: Refl
 
-{-
--- TODO RGS
-
 beqNatTrueIff :: forall (n1 :: Nat) (n2 :: Nat).
                  Sing n1 -> Sing n2
               -> ((n1 == n2) :~: True) <-> n1 :~: n2
 beqNatTrueIff sn1 sn2 = (nec, suf)
   where
     nec :: ((n1 == n2) :~: True) -> n1 :~: n2
-    nec = undefined
+    nec = beqNatTrue sn1 sn2
 
     suf :: n1 :~: n2 -> ((n1 == n2) :~: True)
-    suf = undefined
--}
+    suf Refl = beqNatRefl sn1
 
 type EBPAux (n :: Nat) (k :: Nat) = n :~: Double k
 $(genDefunSymbols [''EBPAux])
@@ -360,12 +357,6 @@ beqListTrueIff sBeq flurb sl1 sl2 = (nec sl1 sl2, suf sl1 sl2)
       | Refl <- snd (flurb sz1 sz2) Refl
       , Refl <- suf szs1 szs2 Refl
       = Refl
-
-$(singletons [d|
-  forallb :: (x -> Bool) -> [x] -> Bool
-  forallb _    []     = True
-  forallb test (x:l') = test x && forallb test l'
-  |])
 
 type FTIAux (test :: x ~> Bool) (a :: x) = test @@ a :~: True
 $(genDefunSymbols [''FTIAux])
