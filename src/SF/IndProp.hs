@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE EmptyCase #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RankNTypes #-}
@@ -15,16 +16,19 @@ module SF.IndProp where
 import Data.Kind
 import Data.Nat
 import Data.Singletons.Prelude hiding (Not, POrd(..))
+import Data.Singletons.Prelude.List (Filter)
 import Data.Singletons.Sigma
 import Data.Singletons.TH (genDefunSymbols, singletons)
 import Data.Tuple
 import Data.Type.Equality ((:~:)(..))
 import Data.Void
+import qualified GHC.TypeNats as TN
 import Prelude hiding (Double)
 import SF.Basics
 import SF.Induction
 import SF.Logic
-import SF.Poly (appAssoc, Fold)
+import SF.Poly -- (appAssoc, Fold, revAppDistr)
+import SF.Tactics
 
 data Ev :: Nat -> Prop where
   Ev0  :: Ev Z
@@ -539,5 +543,110 @@ beqNatPPractice sn (SCons sx sxs) Refl i
         case i of
           Left Refl -> ne Refl
           Right i' -> beqNatPPractice sn sxs Refl i'
+
+data Nostutter :: forall (x :: Type). [x] -> Prop where
+  NSNil       :: Nostutter '[]
+  NSSingleton :: Nostutter '[x]
+  NSCons      :: x :/: y -> Nostutter (y:zs) -> Nostutter (x:y:zs)
+
+testNostutter1 :: Nostutter (Map LitSym0 '[3,1,4,1,5,6])
+testNostutter1 =
+  let mkNotEq :: forall (a :: TN.Nat) (b :: TN.Nat).
+                 ((Lit a == Lit b) ~ False, SingI (Lit a), SingI (Lit b))
+              => Lit a :/: Lit b
+      mkNotEq = fst (beqNatFalseIff (sLit @a) (sLit @b)) Refl
+  in NSCons (mkNotEq @3 @1) $
+     NSCons (mkNotEq @1 @4) $
+     NSCons (mkNotEq @4 @1) $
+     NSCons (mkNotEq @1 @5) $
+     NSCons (mkNotEq @5 @6) $
+     NSSingleton
+
+testNostutter2 :: Nostutter '[]
+testNostutter2 = NSNil
+
+testNostutter3 :: Nostutter '[Lit 5]
+testNostutter3 = NSSingleton
+
+testNostutter4 :: Not (Nostutter (Map LitSym0 '[3,1,1,4]))
+testNostutter4 (NSCons _ (NSCons ne11 _)) = ne11 Refl
+
+data InOrderMerge :: forall (x :: Type). [x] -> [x] -> [x] -> Prop where
+  IOMNil   :: InOrderMerge '[] '[] '[]
+  IOMCons1 :: InOrderMerge l l1 l2 -> InOrderMerge (x:l) (x:l1) l2
+  IOMCons2 :: InOrderMerge l l1 l2 -> InOrderMerge (y:l) l1 (y:l2)
+
+filterChallenge :: forall (x :: Type) (test :: x ~> Bool)
+                   (l :: [x]) (l1 :: [x]) (l2 :: [x]).
+                   Sing test -> Sing l
+                -> InOrderMerge l l1 l2
+                -> Forallb test l1 :~: True
+                -> Existsb test l2 :~: False
+                -> Filter test l :~: l1
+filterChallenge _ _ IOMNil Refl Refl = Refl
+filterChallenge stest (SCons sx sxs) (IOMCons1 iom) Refl Refl
+  = case stest @@ sx of
+      STrue
+        | Refl <- filterChallenge stest sxs iom Refl Refl
+        -> Refl
+filterChallenge stest (SCons sx sxs) (IOMCons2 iom) Refl Refl
+  = case stest @@ sx of
+      SFalse
+        | Refl <- filterChallenge stest sxs iom Refl Refl
+        -> Refl
+
+{-
+-- TODO RGS
+
+filterChallenge2
+-}
+
+data Pal :: forall (x :: Type). [x] -> Prop where
+  PalNil       :: Pal '[]
+  PalSingleton :: Pal '[x]
+  PalPad       :: Sing a -> Sing b
+               -> Pal b -> Pal (a:b ++ '[a])
+
+palAppRev :: forall (x :: Type) (l :: [x]).
+             Sing l -> Pal (l ++ Rev l)
+palAppRev SNil = PalNil
+palAppRev (SCons sx sxs)
+  | Refl <- appAssoc sxs (sRev sxs) (SCons sx SNil)
+  = PalPad sx (sxs %++ sRev sxs) (palAppRev sxs)
+
+palRev :: forall (x :: Type) (l :: [x]).
+          Pal l -> l :~: Rev l
+palRev PalNil       = Refl
+palRev PalSingleton = Refl
+palRev (PalPad (sa :: Sing a) (sb :: Sing b) p)
+  | Refl <- palRev p
+  , Refl <- revAppDistr sb (SCons sa SNil)
+  = Refl
+
+{-
+$(singletons [d|
+  -- TODO RGS: Remove corresponding imports
+
+  init :: [a] -> [a]
+  init []     = error "empty"
+  init (x:xs) = init' x xs
+
+  init' :: a -> [a] -> [a]
+  init' _ []     = []
+  init' y (z:zs) = y : init' z zs
+  |])
+-}
+
+{-
+-- TODO RGS
+
+palindromeConverse :: forall (x :: Type) (l :: [x]).
+                      Sing l
+                   -> l :~: Rev l -> Pal l
+palindromeConverse SNil Refl = PalNil
+palindromeConverse (SCons _ SNil) Refl = PalSingleton
+palindromeConverse (SCons (_ :: Sing x) (SCons (_ :: Sing y) (sxs :: Sing zs))) Refl
+  = case palindromeConverse sxs Refl of
+-}
 
 -- TODO RGS

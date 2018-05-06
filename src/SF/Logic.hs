@@ -20,6 +20,7 @@ import Data.Singletons.TH
 import Data.Void
 import Prelude hiding (Double)
 import SF.Induction
+import SF.Poly
 import SF.Tactics
 
 type Prop = Type -- lol
@@ -212,10 +213,6 @@ combineOddEvenElimEven :: forall (podd :: Nat ~> Prop) (peven :: Nat ~> Prop) (n
 combineOddEvenElimEven _ _ _ coe Refl = coe
 
 $(singletons [d|
-  rev :: [a] -> [a]
-  rev [] = []
-  rev (x:xs) = rev xs ++ [x]
-
   revAppend :: [x] -> [x] -> [x]
   revAppend []      l2 = l2
   revAppend (x:l1') l2 = revAppend l1' (x:l2)
@@ -296,10 +293,10 @@ orbTrueIff s1 _ = (nec s1, suf)
     suf (Left Refl) = Refl
     suf (Right Refl) = Refl
 
-beqNatFalse :: forall (x :: Nat) (y :: Nat).
-               Sing x -> Sing y
-            -> (x == y) :~: False <-> x :/: y
-beqNatFalse sx sy = (nec sx sy, suf sx sy)
+beqNatFalseIff :: forall (x :: Nat) (y :: Nat).
+                  Sing x -> Sing y
+               -> (x == y) :~: False <-> x :/: y
+beqNatFalseIff sx sy = (nec sx sy, suf sx sy)
   where
     nec :: forall (xx :: Nat) (yy :: Nat).
            Sing xx -> Sing yy
