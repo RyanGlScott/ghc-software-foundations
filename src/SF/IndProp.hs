@@ -624,20 +624,6 @@ palRev (PalPad (sa :: Sing a) (sb :: Sing b) p)
   = Refl
 
 {-
-$(singletons [d|
-  -- TODO RGS: Remove corresponding imports
-
-  init :: [a] -> [a]
-  init []     = error "empty"
-  init (x:xs) = init' x xs
-
-  init' :: a -> [a] -> [a]
-  init' _ []     = []
-  init' y (z:zs) = y : init' z zs
-  |])
--}
-
-{-
 -- TODO RGS
 
 palindromeConverse :: forall (x :: Type) (l :: [x]).
@@ -648,5 +634,54 @@ palindromeConverse (SCons _ SNil) Refl = PalSingleton
 palindromeConverse (SCons (_ :: Sing x) (SCons (_ :: Sing y) (sxs :: Sing zs))) Refl
   = case palindromeConverse sxs Refl of
 -}
+
+data Disjoint :: forall (x :: Type). [x] -> [x] -> Prop where
+  DJNil   :: Disjoint '[] '[]
+  DJCons1 :: Not (In x l2) -> Disjoint l1 l2 -> Disjoint (x:l1) l2
+  DJCons2 :: Not (In y l1) -> Disjoint l1 l2 -> Disjoint l1 (y:l2)
+
+data NoDup :: forall (x :: Type). [x] -> Prop where
+  NDNil  :: NoDup '[]
+  NDCons :: Sing x -> Not (In x l) -> NoDup l -> NoDup (x:l)
+
+type family NoDupThmAux (l :: [x]) (p :: ([x], [x])) :: Type where
+  NoDupThmAux l '(l1, l2) = (l :~: l1 ++ l2) /\ Disjoint l1 l2
+$(genDefunSymbols [''NoDupThmAux])
+
+noDupThm :: forall (x :: Type) (l :: [x]).
+            NoDup l
+         -> Sigma ([x], [x]) (NoDupThmAuxSym1 l)
+noDupThm NDNil = STuple2 SNil SNil :&: (Refl, DJNil)
+noDupThm (NDCons sx ni nd)
+  = case noDupThm nd of
+      STuple2 sn1 sn2 :&: (Refl, dj) ->
+        STuple2 (SCons sx sn1) sn2 :&: (Refl, DJCons1 (lemma sx sn1 sn2 ni) dj)
+  where
+    lemma :: forall (a :: x) (ys :: [x]) (zs :: [x]).
+             Sing a -> Sing ys -> Sing zs
+          -> Not (In a (ys ++ zs))
+          -> Not (In a zs)
+    lemma _ _ SNil _ izs = izs
+    lemma sa sys szs@(SCons sz szss) niyzs izs =
+      case izs of
+        Left Refl  -> niyzs $ lemma2 sa sys szs izs
+        Right izs' -> lemma sa sys szss (niyzs . shift sa sz sys szss) izs'
+
+    lemma2 :: forall (a :: x) (ys :: [x]) (zs :: [x]).
+              Sing a -> Sing ys -> Sing zs
+           -> In a zs -> In a (ys ++ zs)
+    lemma2 _ SNil _ i = i
+    lemma2 sa (SCons _ sys) szs i
+      = Right $ lemma2 sa sys szs i
+
+    shift :: forall (a :: x) (z :: x) (ys :: [x]) (zs :: [x]).
+             Sing a -> Sing z -> Sing ys -> Sing zs
+          -> In a (ys ++ zs)
+          -> In a (ys ++ (z:zs))
+    shift _ _ SNil _ izs = Right izs
+    shift sa sz (SCons _ sys) szs iysz
+      = case iysz of
+          Left Refl -> Left Refl
+          Right iysz' -> Right $ shift sa sz sys szs iysz'
 
 -- TODO RGS
