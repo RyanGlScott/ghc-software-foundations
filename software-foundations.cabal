@@ -26,8 +26,10 @@ library
                        SF.IndProp
                        SF.Maps
                        SF.ProofObjects
+                       SF.IndPrinciples
   other-modules:       SF.Axiom
   build-depends:       base           >= 4.11  && < 4.12
+                     , eliminators    >= 0.4.1 && < 0.5
                      , singletons     >= 2.4.1 && < 2.5
                      , singleton-nats >= 0.4.1 && < 0.5
                      , text
