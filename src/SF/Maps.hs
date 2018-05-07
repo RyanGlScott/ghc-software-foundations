@@ -76,14 +76,17 @@ tUpdateNeq :: forall (a :: Type) (v :: a) (x1 :: Symbol) (x2 :: Symbol) (m :: PT
 tUpdateNeq sx1 sx2 ne12
   = sCompare' sx1 sx2 (absurd $ ne12 Refl) Refl Refl
 
-tUpdateShadow :: forall (a :: Type) (m :: PTotalMap a) (v1 :: a) (v2 :: a)
-                        (x1 :: Symbol) (x2 :: Symbol).
-                 Sing x1 -> Sing x2
-              -> (m & '[x1 :-> v1, x1 :-> v2]) @@ x2 :~: (m & '[x1 :-> v2]) @@ x2
-tUpdateShadow sx1 sx2
-  = case sx1 `sCompare` sx2 of
-      SEQ -> Refl
-      SLT -> Refl
-      SGT -> Refl
+tUpdateShadow :: forall (a :: Type) (m :: PTotalMap a) (v1 :: a) (v2 :: a) (x :: Symbol).
+                 Sing x
+              -> m & '[x :-> v1, x :-> v2] :~: m & '[x :-> v2]
+tUpdateShadow sx = funExt go
+  where
+    go :: forall (x2 :: Symbol).
+          Sing x2
+       -> (m & '[x :-> v1, x :-> v2]) @@ x2 :~: (m & '[x :-> v2]) @@ x2
+    go sx2 = case sx `sCompare` sx2 of
+               SEQ -> Refl
+               SLT -> Refl
+               SGT -> Refl
 
 -- TODO RGS
