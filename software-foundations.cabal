@@ -25,6 +25,7 @@ library
                        SF.Logic
                        SF.IndProp
                        SF.Maps
+                       SF.ProofObjects
   other-modules:       SF.Axiom
   build-depends:       base           >= 4.11  && < 4.12
                      , singletons     >= 2.4.1 && < 2.5
