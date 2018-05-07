@@ -112,4 +112,29 @@ beqSymbolP :: forall (x :: Symbol) (y :: Symbol).
            -> Reflect (x :~: y) (BeqSymbol x y)
 beqSymbolP sx sy = iffReflect (sx `sBeqSymbol` sy) $ swap $ beqSymbolTrueIff sx sy
 
--- TODO RGS
+tUpdateSame :: forall (a :: Type) (x :: Symbol) (m :: PTotalMap a).
+               Sing x
+            -> m & '[x :-> m @@ x] :~: m
+tUpdateSame sx1 = funExt go
+  where
+    go :: forall (x2 :: Symbol). Sing x2
+       -> (m & '[x :-> m @@ x]) @@ x2 :~: m @@ x2
+    go sx2 = case beqSymbolP sx1 sx2 of
+               ReflectT Refl -> Refl
+               ReflectF _    -> Refl
+
+tUpdatePermute :: forall (a :: Type) (v1 :: a) (v2 :: a)
+                         (x1 :: Symbol) (x2 :: Symbol) (m :: PTotalMap a).
+                  Sing x1 -> Sing x2
+               -> x2 :/: x1
+               -> m & '[x2 :-> v2, x1 :-> v1] :~: m & '[x1 :-> v1, x2 :-> v2]
+tUpdatePermute sx1 sx2 ne21 = funExt go
+  where
+    go :: forall (x3 :: Symbol). Sing x3
+       -> (m & '[x2 :-> v2, x1 :-> v1]) @@ x3 :~: (m & '[x1 :-> v1, x2 :-> v2]) @@ x3
+    go sx3 = case beqSymbolP sx2 sx3 of
+               ReflectF _    -> Refl
+               ReflectT Refl ->
+                 case beqSymbolP sx1 sx3 of
+                   ReflectF _    -> Refl
+                   ReflectT Refl -> absurd $ ne21 Refl
