@@ -27,6 +27,7 @@ library
                        SF.Maps
                        SF.ProofObjects
                        SF.IndPrinciples
+                       SF.Rel
   other-modules:       SF.Axiom
   build-depends:       base           >= 4.11  && < 4.12
                      , eliminators    >= 0.4.1 && < 0.5
