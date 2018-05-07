@@ -15,10 +15,11 @@ import Data.Kind
 import Data.Singletons.Prelude
 import Data.Singletons.TH
 import Data.Text (Text)
-import Data.Type.Equality (gcastWith)
+import Data.Tuple
 import Data.Void
 import GHC.TypeLits (CmpSymbol)
 import SF.Axiom
+import SF.IndProp
 import SF.Logic
 
 type TotalMap' (p :: Type ~> Type ~> Type) (sym :: Type) (a :: Type) = p @@ sym @@ a
@@ -34,8 +35,14 @@ type family TEmpty (v :: a) :: PTotalMap a where
 tUpdate :: TotalMap a -> Text -> a -> Text -> a
 tUpdate m x v x' = if (x `compare` x' == EQ) then v else m x'
 
+type BeqSymbol s1 s2 = s1 `CmpSymbol` s2 == EQ
+sBeqSymbol :: forall (s1 :: Symbol) (s2 :: Symbol).
+              Sing s1 -> Sing s2
+           -> Sing (s1 `CmpSymbol` s2 == EQ)
+sBeqSymbol s1 s2 = (s1 `sCompare` s2) %== SEQ
+
 type family TUpdateAux (m :: PTotalMap a) (x :: Symbol) (v :: a) (x' :: Symbol) :: a where
-  TUpdateAux m x v x' = If (x `CmpSymbol` x' == EQ) v (m @@ x')
+  TUpdateAux m x v x' = If (BeqSymbol x x') v (m @@ x')
 $(genDefunSymbols [''TUpdateAux])
 type family TUpdate (m :: PTotalMap a) (x :: Symbol) (v :: a) :: PTotalMap a where
   TUpdate m x v = TUpdateAuxSym3 m x v
@@ -60,21 +67,21 @@ tUpdateEq = Refl
 -- we have to graft this proof together.
 sCompare' :: forall (s1 :: Symbol) (s2 :: Symbol) r.
              Sing s1 -> Sing s2
-          -> (s1 ~ s2 => r)
-          -> (CmpSymbol s1 s2 ~ LT => r)
-          -> (CmpSymbol s1 s2 ~ GT => r)
+          -> (s1 :~: s2              -> r)
+          -> (CmpSymbol s1 s2 :~: LT -> r)
+          -> (CmpSymbol s1 s2 :~: GT -> r)
           -> r
 sCompare' s1 s2 eqCase ltCase gtCase =
   case sCompare s1 s2 of
-    SLT -> ltCase
-    SGT -> gtCase
-    SEQ -> gcastWith (axiom @s1 @s2) eqCase
+    SLT -> ltCase Refl
+    SGT -> gtCase Refl
+    SEQ -> eqCase (axiom @s1 @s2)
 
 tUpdateNeq :: forall (a :: Type) (v :: a) (x1 :: Symbol) (x2 :: Symbol) (m :: PTotalMap a).
               Sing x1 -> Sing x2
            -> x1 :/: x2 -> (m & '[x1 :-> v]) @@ x2 :~: m @@ x2
 tUpdateNeq sx1 sx2 ne12
-  = sCompare' sx1 sx2 (absurd $ ne12 Refl) Refl Refl
+  = sCompare' sx1 sx2 (absurd . ne12) (\Refl -> Refl) (\Refl -> Refl)
 
 tUpdateShadow :: forall (a :: Type) (m :: PTotalMap a) (v1 :: a) (v2 :: a) (x :: Symbol).
                  Sing x
@@ -88,5 +95,21 @@ tUpdateShadow sx = funExt go
                SEQ -> Refl
                SLT -> Refl
                SGT -> Refl
+
+beqSymbolTrueIff :: forall (x :: Symbol) (y :: Symbol).
+                    Sing x -> Sing y
+                 -> BeqSymbol x y :~: True <-> x :~: y
+beqSymbolTrueIff sx sy = (nec, suf)
+  where
+    nec :: BeqSymbol x y :~: True -> x :~: y
+    nec r = sCompare' sx sy id (\Refl -> case r of {}) (\Refl -> case r of {})
+
+    suf :: x :~: y -> BeqSymbol x y :~: True
+    suf Refl = Refl
+
+beqSymbolP :: forall (x :: Symbol) (y :: Symbol).
+              Sing x -> Sing y
+           -> Reflect (x :~: y) (BeqSymbol x y)
+beqSymbolP sx sy = iffReflect (sx `sBeqSymbol` sy) $ swap $ beqSymbolTrueIff sx sy
 
 -- TODO RGS
