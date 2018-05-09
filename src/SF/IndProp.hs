@@ -84,7 +84,7 @@ evPlusPlus sn sm sp enm enp            -- (n + m) + (n + p)
   = evEvEv (evSum enm enp) (evDouble sn)
 
 data TotalRelation :: Nat -> Nat -> Prop where
-  TR :: TotalRelation n n
+  TR :: TotalRelation n m
 
 data EmptyRelation :: Nat -> Nat -> Prop
 
@@ -95,8 +95,10 @@ data Le :: Nat -> Nat -> Prop where
 type (<=) = Le
 infix 4 <=
 
-type (<) (n :: Nat) = Le (S n)
+type Lt (n :: Nat) (m :: Nat) = Le (S n) m
+type (<) (n :: Nat) (m :: Nat) = Lt n m
 infix 4 <
+$(genDefunSymbols [''Lt])
 
 leTrans :: forall (m :: Nat) (n :: Nat) (o :: Nat).
            m <= n -> n <= o -> m <= o
