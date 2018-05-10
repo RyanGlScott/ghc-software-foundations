@@ -31,15 +31,24 @@ tEmpty v _ = v
 
 type family TEmpty (v :: a) :: PTotalMap a where
   TEmpty v = ConstSym1 v
+$(genDefunSymbols [''TEmpty])
 
-tUpdate :: TotalMap a -> Text -> a -> Text -> a
-tUpdate m x v x' = if (x `compare` x' == EQ) then v else m x'
+sTEmpty :: forall (a :: Type) (v :: a). Sing v -> Sing (TEmpty v)
+sTEmpty sv = singFun1 @(ConstSym1 v) (sConst sv)
+
+beqSymbol :: Text -> Text -> Bool
+beqSymbol s1 s2 = (s1 `compare` s2) == EQ
 
 type BeqSymbol s1 s2 = s1 `CmpSymbol` s2 == EQ
+$(genDefunSymbols [''BeqSymbol])
+
 sBeqSymbol :: forall (s1 :: Symbol) (s2 :: Symbol).
               Sing s1 -> Sing s2
            -> Sing (s1 `CmpSymbol` s2 == EQ)
 sBeqSymbol s1 s2 = (s1 `sCompare` s2) %== SEQ
+
+tUpdate :: TotalMap a -> Text -> a -> Text -> a
+tUpdate m x v x' = if (x `compare` x' == EQ) then v else m x'
 
 type family TUpdateAux (m :: PTotalMap a) (x :: Symbol) (v :: a) (x' :: Symbol) :: a where
   TUpdateAux m x v x' = If (BeqSymbol x x') v (m @@ x')
@@ -47,13 +56,30 @@ $(genDefunSymbols [''TUpdateAux])
 type family TUpdate (m :: PTotalMap a) (x :: Symbol) (v :: a) :: PTotalMap a where
   TUpdate m x v = TUpdateAuxSym3 m x v
 
-data KV a b = a :-> b
-infixr 0 :->
+sTUpdate :: forall m x v. Sing m -> Sing x -> Sing v -> Sing (TUpdate m x v)
+sTUpdate sm sx sv = singFun1 @(TUpdateAuxSym3 m x v) $ \sx' ->
+  sIf (sCompare sx sx' %== SEQ)
+      sv (sm @@ sx')
+
+$(singletons [d|
+  data KV a b = a :-> b
+  infixr 0 :->
+  |])
+
+(&) :: TotalMap a -> [KV Text a] -> TotalMap a
+m & [] = m
+m & ((k :-> v) : kvs) = tUpdate m k v & kvs
 
 type family (m :: PTotalMap a) & (l :: [KV Symbol a]) where
   m & '[]               = m
   m & ((k :-> v) : kvs) = TUpdate m k v & kvs
 infixl 9 &
+$(genDefunSymbols [''(&)])
+
+(%&) :: Sing m -> Sing l -> Sing (m & l)
+sm %& SNil = sm
+sm %& (SCons (sk :%-> sv) skvs) = sTUpdate sm sk sv %& skvs
+infixl 9 %&
 
 tApplyEmpty :: forall (a :: Type) (x :: Symbol) (v :: a).
                TEmpty v @@ x :~: v

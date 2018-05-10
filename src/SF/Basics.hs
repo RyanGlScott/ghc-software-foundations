@@ -15,6 +15,15 @@ import Data.Singletons.Prelude
 import Data.Singletons.TH
 
 $(singletons [d|
+  negb :: Bool -> Bool
+  negb = not
+
+  andb :: Bool -> Bool -> Bool
+  andb = (&&)
+
+  orb :: Bool -> Bool -> Bool
+  orb = (||)
+
   nandb :: Bool -> Bool -> Bool
   nandb True  x = not x
   nandb False _ = True
@@ -177,6 +186,9 @@ warble (SOdd  sb) | Refl <- warble sb
                         = Refl
 
 $(singletons [d|
+  beqNat :: Nat -> Nat -> Bool
+  beqNat = (==)
+
   leb :: Nat -> Nat -> Bool
   leb Z _ = True
   leb (S _) Z = False
