@@ -1,11 +1,12 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE EmptyCase #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeInType #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 module SF.Tactics where
@@ -169,10 +170,13 @@ filterExercise sTest (SCons sx sxs) Refl =
 
 $(singletons [d|
   forallb :: (a -> Bool) -> [a] -> Bool
-  forallb = all
+  forallb _ []     = True
+  forallb p (x:xs) = p x && forallb p xs
 
   existsb, existsb' :: (a -> Bool) -> [a] -> Bool
-  existsb = any
+  existsb _ []     = False
+  existsb p (x:xs) = p x || existsb p xs
+
   existsb' p = not . forallb (not . p)
   |])
 
