@@ -1,14 +1,17 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE EmptyCase #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NoStarIsType #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeInType #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 module SF.IndProp where
@@ -312,7 +315,7 @@ data ExpMatch :: forall (t :: Type). [t] -> RegExp t -> Prop where
            -> ExpMatch (s1 ++ s2) (Star re)
 
 type (=~) = ExpMatch
-infix 8 =~
+infix 4 =~
 $(genDefunSymbols [''(=~)])
 
 emptyIsEmpty :: forall (t :: Type) (s :: [t]).

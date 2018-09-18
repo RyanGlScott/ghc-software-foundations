@@ -1,21 +1,27 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeInType #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 module SF.Poly where
 
 import Data.Kind
 import Data.Nat
-import Data.Singletons.Prelude
+import Data.Singletons.Prelude hiding
+       ( FoldMap, FoldMapSym0, FoldMapSym1, FoldMapSym2, sFoldMap )
 import Data.Singletons.Prelude.List hiding
        ( Length, LengthSym0, LengthSym1, sLength )
-import Data.Singletons.TH
+import Data.Singletons.TH hiding
+       ( Length, sLength
+       , FoldMap, FoldMapSym0, FoldMapSym1, FoldMapSym2, sFoldMap
+       , Fold, sFold )
 import SF.Induction
 import Prelude hiding (length)
 

@@ -1,12 +1,13 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE EmptyCase #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeInType #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 module SF.Logic where
@@ -385,7 +386,7 @@ notExistsDist :: forall (x :: Type) (p :: x ~> Prop) (xx :: x). SingI xx =>
                  ExcludedMiddle -> Not (Sigma x (NotSym0 .@#@$$$ p))
               -> p @@ xx
 notExistsDist excludedMiddle ns =
-  either id (absurd . ns . (:&:) (sing @x @xx)) $ excludedMiddle @(p @@ xx)
+  either id (absurd . ns . (:&:) (sing @xx)) $ excludedMiddle @(p @@ xx)
 
 -- TODO RGS
 
