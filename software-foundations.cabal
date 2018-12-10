@@ -14,7 +14,7 @@ category:            Dependent Types
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
-tested-with:         GHC == 8.6.2
+tested-with:         GHC == 8.6.3
 
 library
   exposed-modules:     SF.Basics

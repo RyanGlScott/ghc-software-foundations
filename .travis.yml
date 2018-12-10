@@ -28,9 +28,9 @@ before_cache:
 
 matrix:
   include:
-    - compiler: "ghc-8.6.2"
+    - compiler: "ghc-8.6.3"
     # env: TEST=--disable-tests BENCH=--disable-benchmarks
-      addons: {apt: {packages: [ghc-ppa-tools,cabal-install-2.4,ghc-8.6.2], sources: [hvr-ghc]}}
+      addons: {apt: {packages: [ghc-ppa-tools,cabal-install-2.4,ghc-8.6.3], sources: [hvr-ghc]}}
     - compiler: "ghc-head"
       env: GHCHEAD=true
       addons: {apt: {packages: [ghc-ppa-tools,cabal-install-head,ghc-head], sources: [hvr-ghc]}}
@@ -80,6 +80,7 @@ install:
     fi
   - grep -Ev -- '^\s*--' ${HOME}/.cabal/config | grep -Ev '^\s*$'
   - "printf 'packages: \".\"\\n' > cabal.project"
+  - "printf 'write-ghc-environment-files: always\\n' >> cabal.project"
   - echo 'package software-foundations' >> cabal.project
   - "echo '  ghc-options: -Werror' >> cabal.project"
   - touch cabal.project.local
@@ -103,6 +104,7 @@ script:
   - cd ${DISTDIR} || false
   - find . -maxdepth 1 -name '*.tar.gz' -exec tar -xvf '{}' \;
   - "printf 'packages: software-foundations-*/*.cabal\\n' > cabal.project"
+  - "printf 'write-ghc-environment-files: always\\n' >> cabal.project"
   - echo 'package software-foundations' >> cabal.project
   - "echo '  ghc-options: -Werror' >> cabal.project"
   - touch cabal.project.local
