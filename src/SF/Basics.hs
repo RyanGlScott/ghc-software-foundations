@@ -162,7 +162,7 @@ $(singletons [d|
 warble :: forall (b :: Bin). Sing b
        -> BinToNat (Incr b) :~: S (BinToNat b)
 warble SZero = Refl
-warble (SEven sb) | Refl <- warble sb = Refl
+warble (SEven {}) = Refl
 warble (SOdd  sb) | Refl <- warble sb
                   , Refl <- plusComm sbn (SS sbn)
                   = Refl
