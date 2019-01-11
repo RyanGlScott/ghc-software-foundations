@@ -333,11 +333,9 @@ updateEq :: forall (d :: PartialMap) (x :: Id) (v :: Nat).
          -> Find x (Update d x v) :~: Some v
 updateEq sD sX sV
   = case sUpdate sD sX sV of
-      SRecord sY _ sD' ->
-        case sX %== sY of
-          STrue -> Refl
-          SFalse | Refl <- updateEq sD' sX sV
-                 -> Refl
+      SRecord _ _ sD'
+        | Refl <- updateEq sD' sX sV
+        -> Refl
 
 updateNeq :: forall (d :: PartialMap) (x :: Id) (y :: Id) (o :: Nat).
              Sing d -> Sing x -> Sing y -> Sing o
