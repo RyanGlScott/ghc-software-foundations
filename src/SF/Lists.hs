@@ -258,9 +258,7 @@ bleNSn (SS sn) | Refl <- bleNSn sn = Refl
 removeDecreasesCount :: forall (s :: Bag). Sing s ->
                         Count (Lit 0) (RemoveOne (Lit 0) s) `Leb` Count (Lit 0) s :~: True
 removeDecreasesCount SNil = Refl
-removeDecreasesCount (SCons SZ sls) | Refl <- removeDecreasesCount sls
-                                    , Refl <- bleNSn (sCount SZ sls)
-                                    = Refl
+removeDecreasesCount (SCons SZ sls)     | Refl <- bleNSn (sCount SZ sls)   = Refl
 removeDecreasesCount (SCons (SS _) sls) | Refl <- removeDecreasesCount sls = Refl
 
 revInjective :: forall (l1 :: NatList) (l2 :: NatList).
