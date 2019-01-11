@@ -247,8 +247,8 @@ natRefl (SS sn) | Refl <- natRefl sn = Refl
 
 countMemberNonzero :: forall (s :: Bag). Sing s ->
                       Lit 1 `Leb` Count (Lit 1) (Lit 1:s) :~: True
-countMemberNonzero SNil = Refl
-countMemberNonzero (SCons _ sls) | Refl <- countMemberNonzero sls = Refl
+countMemberNonzero SNil    = Refl
+countMemberNonzero SCons{} = Refl
 
 bleNSn :: forall (n :: Nat). Sing n ->
           n `Leb` S n :~: True
