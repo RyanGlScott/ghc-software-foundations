@@ -10,15 +10,15 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.ProofObjects where
+module SF.LF.ProofObjects where
 
 import Data.Kind
 import Data.Nat
 import Data.Singletons.Prelude
 import Data.Singletons.Sigma
 import Data.Type.Equality
-import SF.IndProp
-import SF.Logic
+import SF.LF.IndProp
+import SF.LF.Logic
 
 ev8' :: Ev (Lit 8)
 ev8' = EvSS $ EvSS $ EvSS $ EvSS Ev0

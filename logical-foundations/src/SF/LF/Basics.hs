@@ -11,7 +11,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Basics where
+module SF.LF.Basics where
 
 import Data.Nat
 import Data.Singletons.Prelude

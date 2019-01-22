@@ -10,13 +10,13 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Imp where
+module SF.LF.Imp where
 
 import Data.Nat
 import Data.Singletons.Prelude
 import Data.Singletons.TH
-import SF.Basics
-import SF.Logic hiding (Not, NotSym0)
+import SF.LF.Basics
+import SF.LF.Logic hiding (Not, NotSym0)
 
 $(singletons [d|
   data AExp

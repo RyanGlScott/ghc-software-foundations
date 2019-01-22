@@ -11,7 +11,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.ImpC where
+module SF.LF.ImpC where
 
 import Data.Kind (Type)
 import Data.Nat
@@ -28,8 +28,8 @@ import Data.Text (Text)
 import Data.Type.Equality ((:~:)(..))
 import GHC.TypeLits (Symbol)
 import Prelude hiding (Eq(..), Ord(..))
-import SF.Basics
-import SF.Maps
+import SF.LF.Basics
+import SF.LF.Maps
 
 data AExp' (sym :: Type)
   = ANum Nat

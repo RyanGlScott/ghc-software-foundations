@@ -11,7 +11,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.IndPrinciples where
+module SF.LF.IndPrinciples where
 
 import Data.Eliminator
 import Data.Eliminator.TH
@@ -19,7 +19,7 @@ import Data.Kind
 import Data.Nat
 import Data.Singletons.Prelude
 import Data.Singletons.TH
-import SF.Logic
+import SF.LF.Logic
 
 type PlusOneR'Aux (n :: Nat) = n + Lit 1 :~: S n
 $(genDefunSymbols [''PlusOneR'Aux])

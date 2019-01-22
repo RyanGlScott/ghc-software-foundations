@@ -7,14 +7,14 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Lists where
+module SF.LF.Lists where
 
 import Data.Nat
 import Data.Singletons.Prelude hiding (Id, IdSym0, IdSym1)
 import Data.Singletons.Prelude.Tuple
 import Data.Singletons.TH
-import SF.Basics
-import SF.Induction
+import SF.LF.Basics
+import SF.LF.Induction
 
 type NatProd = (Nat, Nat)
 

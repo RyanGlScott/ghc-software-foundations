@@ -10,7 +10,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Logic where
+module SF.LF.Logic where
 
 import Data.Kind
 import Data.Nat
@@ -20,9 +20,9 @@ import Data.Singletons.Sigma
 import Data.Singletons.TH
 import Data.Void
 import Prelude hiding (Double)
-import SF.Induction
-import SF.Poly
-import SF.Tactics
+import SF.LF.Induction
+import SF.LF.Poly
+import SF.LF.Tactics
 
 type Prop = Type -- lol
 type Not a = a -> Void

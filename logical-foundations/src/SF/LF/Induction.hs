@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Induction where
+module SF.LF.Induction where
 
 import Data.Nat
 import Data.Singletons.Prelude

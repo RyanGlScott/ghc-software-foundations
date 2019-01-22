@@ -8,14 +8,14 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Rel where
+module SF.LF.Rel where
 
 import Data.Kind
 import Data.Nat
 import Data.Singletons
 import Data.Type.Equality
-import SF.IndProp
-import SF.Logic
+import SF.LF.IndProp
+import SF.LF.Logic
 
 type Relation' (p :: Type ~> Type ~> Type) (x :: Type) = p @@ x @@ (p @@ x @@ Prop)
 type Relation  x = Relation' (TyCon2 (->)) x

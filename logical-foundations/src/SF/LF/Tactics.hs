@@ -9,7 +9,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Tactics where
+module SF.LF.Tactics where
 
 import Data.Kind
 import Data.Nat
@@ -17,9 +17,9 @@ import Data.Singletons.Prelude
 import Data.Singletons.Prelude.List (Filter)
 import Data.Singletons.TH (singletons)
 import Data.Type.Equality ((:~:)(..))
-import SF.Basics
-import SF.Induction
-import SF.Poly
+import SF.LF.Basics
+import SF.LF.Induction
+import SF.LF.Poly
 
 sillyEx :: (forall (n :: Nat). Sing n -> Evenb n :~: True -> Oddb (S n) :~: True)
         -> Evenb (Lit 3) :~: True

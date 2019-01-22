@@ -10,4 +10,4 @@
   https://tldrlegal.com/license/bsd-3-clause-license-%28revised%29
   "BSD 3-Clause License (Revised)"
 
-The Software Foundations book, in GHC
+The Software Foundations books, in GHC

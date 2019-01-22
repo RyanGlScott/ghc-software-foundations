@@ -1,7 +1,7 @@
-name:                software-foundations
+name:                logical-foundations
 version:             0.1
-synopsis:            The Software Foundations book, in GHC
-description:         The Software Foundations book, in GHC.
+synopsis:            The first Software Foundations book, in GHC
+description:         The first Software Foundations book, in GHC.
 homepage:            https://github.com/RyanGlScott/ghc-software-foundations
 bug-reports:         https://github.com/RyanGlScott/ghc-software-foundations/issues
 license:             BSD3
@@ -16,21 +16,26 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 tested-with:         GHC == 8.6.3
 
+source-repository head
+  type:     git
+  location: https://github.com/RyanGlScott/ghc-software-foundations
+  subdir:   logical-foundations
+
 library
-  exposed-modules:     SF.Basics
-                       SF.Induction
-                       SF.Lists
-                       SF.Poly
-                       SF.Tactics
-                       SF.Logic
-                       SF.IndProp
-                       SF.Maps
-                       SF.ProofObjects
-                       SF.IndPrinciples
-                       SF.Rel
-                       SF.Imp
-                       SF.ImpC
-  other-modules:       SF.Axiom
+  exposed-modules:     SF.LF.Basics
+                       SF.LF.Induction
+                       SF.LF.Lists
+                       SF.LF.Poly
+                       SF.LF.Tactics
+                       SF.LF.Logic
+                       SF.LF.IndProp
+                       SF.LF.Maps
+                       SF.LF.ProofObjects
+                       SF.LF.IndPrinciples
+                       SF.LF.Rel
+                       SF.LF.Imp
+                       SF.LF.ImpC
+  other-modules:       SF.LF.Axiom
   build-depends:       base           >= 4.12  && < 4.13
                      , eliminators    >= 0.5   && < 0.6
                      , singletons     >= 2.5   && < 2.6

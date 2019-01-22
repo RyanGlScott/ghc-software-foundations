@@ -14,7 +14,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.IndProp where
+module SF.LF.IndProp where
 
 import Data.Kind
 import Data.Nat
@@ -27,11 +27,11 @@ import Data.Type.Equality ((:~:)(..))
 import Data.Void
 import qualified GHC.TypeNats as TN
 import Prelude hiding (Double)
-import SF.Basics
-import SF.Induction
-import SF.Logic
-import SF.Poly -- (appAssoc, Fold, revAppDistr)
-import SF.Tactics
+import SF.LF.Basics
+import SF.LF.Induction
+import SF.LF.Logic
+import SF.LF.Poly -- (appAssoc, Fold, revAppDistr)
+import SF.LF.Tactics
 
 data Ev :: Nat -> Prop where
   Ev0  :: Ev Z

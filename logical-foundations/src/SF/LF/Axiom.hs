@@ -2,7 +2,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeOperators #-}
-module SF.Axiom where
+module SF.LF.Axiom where
 
 import Data.Kind
 import Data.Singletons

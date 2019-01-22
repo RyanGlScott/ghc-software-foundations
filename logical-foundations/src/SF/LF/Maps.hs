@@ -11,7 +11,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Maps where
+module SF.LF.Maps where
 
 import Data.Kind
 import Data.Singletons.Prelude
@@ -20,9 +20,9 @@ import Data.Text (Text)
 import Data.Tuple
 import Data.Void
 import GHC.TypeLits (CmpSymbol)
-import SF.Axiom
-import SF.IndProp
-import SF.Logic
+import SF.LF.Axiom
+import SF.LF.IndProp
+import SF.LF.Logic
 
 type TotalMap' (p :: Type ~> Type ~> Type) (sym :: Type) (a :: Type) = p @@ sym @@ a
 type TotalMap  a = TotalMap' (TyCon2 (->)) Text   a

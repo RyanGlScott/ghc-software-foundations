@@ -10,7 +10,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module SF.Poly where
+module SF.LF.Poly where
 
 import Data.Kind
 import Data.Nat
@@ -22,7 +22,7 @@ import Data.Singletons.TH hiding
        ( Length, sLength
        , FoldMap, FoldMapSym0, FoldMapSym1, FoldMapSym2, sFoldMap
        , Fold, sFold )
-import SF.Induction
+import SF.LF.Induction
 import Prelude hiding (length)
 
 $(singletons [d|
