@@ -12,7 +12,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module SF.LF.Poly where
 
-import Data.Kind
 import Data.Nat
 import Data.Singletons.Prelude hiding
        ( FoldMap, FoldMapSym0, FoldMapSym1, FoldMapSym2, sFoldMap )
@@ -35,26 +34,26 @@ $(singletons [d|
   rev (x:xs) = rev xs ++ [x]
   |])
 
-appNilR :: forall (x :: Type) (l :: [x]). Sing l
+appNilR :: forall x (l :: [x]). Sing l
         -> l ++ '[] :~: l
 appNilR SNil = Refl
 appNilR (SCons _ sls) | Refl <- appNilR sls = Refl
 
-appAssoc :: forall (a :: Type) (l :: [a]) (m :: [a]) (n :: [a]).
+appAssoc :: forall a (l :: [a]) (m :: [a]) (n :: [a]).
             Sing l -> Sing m -> Sing n
          -> l ++ (m ++ n) :~: (l ++ m) ++ n
 appAssoc SNil _ _ = Refl
 appAssoc (SCons _ sls) sm sn | Refl <- appAssoc sls sm sn
                              = Refl
 
-appLength :: forall (x :: Type) (l1 :: [x]) (l2 :: [x]).
+appLength :: forall x (l1 :: [x]) (l2 :: [x]).
              Sing l1 -> Sing l2
           -> Length (l1 ++ l2) :~: Length l1 + Length l2
 appLength SNil _ = Refl
 appLength (SCons _ sls1) sl2 | Refl <- appLength sls1 sl2
                              = Refl
 
-revAppDistr :: forall (x :: Type) (l1 :: [x]) (l2 :: [x]).
+revAppDistr :: forall x (l1 :: [x]) (l2 :: [x]).
                Sing l1 -> Sing l2
             -> Rev (l1 ++ l2) :~: Rev l2 ++ Rev l1
 revAppDistr SNil sl2 | Refl <- appNilR (sRev sl2) = Refl
@@ -63,7 +62,7 @@ revAppDistr (SCons s1 sls1) sl2
   , Refl <- appAssoc (sRev sl2) (sRev sls1) (SCons s1 SNil)
   = Refl
 
-revInvolutive :: forall (x :: Type) (l :: [x]). Sing l -> Rev (Rev l) :~: l
+revInvolutive :: forall x (l :: [x]). Sing l -> Rev (Rev l) :~: l
 revInvolutive SNil = Refl
 revInvolutive (SCons sl sls) | Refl <- revInvolutive sls
                              , Refl <- revAppDistr (sRev sls) (SCons sl SNil)
@@ -123,16 +122,14 @@ testPartition2 :: Partition (ConstSym1 False) (Map LitSym0 '[5,9,0]) :~:
                   '( '[], Map LitSym0 '[5,9,0])
 testPartition2 = Refl
 
-mapApp :: forall (x :: Type) (y :: Type)
-                 (f :: x ~> y) (l1 :: [x]) (l2 :: [x]).
+mapApp :: forall x y (f :: x ~> y) (l1 :: [x]) (l2 :: [x]).
           Sing f -> Sing l1 -> Sing l2
        -> Map f (l1 ++ l2) :~: Map f l1 ++ Map f l2
 mapApp _ SNil _ = Refl
 mapApp sF (SCons _ sls1) sl2 | Refl <- mapApp sF sls1 sl2
                              = Refl
 
-mapRev :: forall (x :: Type) (y :: Type)
-                 (f :: x ~> y) (l :: [x]).
+mapRev :: forall x y (f :: x ~> y) (l :: [x]).
           Sing f -> Sing l
        -> Map f (Rev l) :~: Rev (Map f l)
 mapRev _ SNil = Refl
@@ -161,28 +158,26 @@ $(singletons [d|
 testFoldLength1 :: FoldLength '[4,7,0] :~: Lit 3
 testFoldLength1 = Refl
 
-foldLengthCorrect :: forall (x :: Type) (l :: [x]).
+foldLengthCorrect :: forall x (l :: [x]).
                      Sing l
                   -> FoldLength l :~: Length l
 foldLengthCorrect SNil = Refl
 foldLengthCorrect (SCons _ sls) | Refl <- foldLengthCorrect sls
                                 = Refl
 
-foldMapCorrect :: forall (x :: Type) (y :: Type) (f :: x ~> y) (l :: [x]).
+foldMapCorrect :: forall x y (f :: x ~> y) (l :: [x]).
                   Sing f -> Sing l
                -> FoldMap f l :~: Map f l
 foldMapCorrect _  SNil = Refl
 foldMapCorrect sF (SCons _ sls) | Refl <- foldMapCorrect sF sls
                                 = Refl
 
-uncurryCurry :: forall (x :: Type) (y :: Type) (z :: Type)
-                       (f :: x ~> y ~> z) (xx :: x) (yy :: y).
+uncurryCurry :: forall x y z (f :: x ~> y ~> z) (xx :: x) (yy :: y).
                 Sing f -> Sing xx -> Sing yy
              -> Curry (UncurrySym1 f) xx yy :~: f @@ xx @@ yy
 uncurryCurry _ _ _ = Refl
 
-curryUncurry :: forall (x :: Type) (y :: Type) (z :: Type)
-                       (f :: (x, y) ~> z) (p :: (x, y)).
+curryUncurry :: forall x y z (f :: (x, y) ~> z) (p :: (x, y)).
                 Sing f -> Sing p
              -> Uncurry (CurrySym1 f) p :~: f @@ p
 curryUncurry _ (STuple2 {}) = Refl

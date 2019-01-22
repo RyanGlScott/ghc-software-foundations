@@ -21,10 +21,11 @@ import Data.Tuple
 import Data.Void
 import GHC.TypeLits (CmpSymbol)
 import SF.LF.Axiom
+import SF.LF.FunExt
 import SF.LF.IndProp
 import SF.LF.Logic
 
-type TotalMap' (p :: Type ~> Type ~> Type) (sym :: Type) (a :: Type) = p @@ sym @@ a
+type TotalMap' (p :: Type ~> Type ~> Type) sym a = p @@ sym @@ a
 type TotalMap  a = TotalMap' (TyCon2 (->)) Text   a
 type PTotalMap a = TotalMap' (~>@#@$)      Symbol a
 
@@ -35,7 +36,7 @@ type family TEmpty (v :: a) :: PTotalMap a where
   TEmpty v = ConstSym1 v
 $(genDefunSymbols [''TEmpty])
 
-sTEmpty :: forall (a :: Type) (v :: a). Sing v -> Sing (TEmpty v)
+sTEmpty :: forall a (v :: a). Sing v -> Sing (TEmpty v)
 sTEmpty sv = singFun1 @(ConstSym1 v) (sConst sv)
 
 beqSymbol :: Text -> Text -> Bool
@@ -83,11 +84,11 @@ sm %& SNil = sm
 sm %& (SCons (sk :%-> sv) skvs) = sTUpdate sm sk sv %& skvs
 infixl 9 %&
 
-tApplyEmpty :: forall (a :: Type) (x :: Symbol) (v :: a).
+tApplyEmpty :: forall a (x :: Symbol) (v :: a).
                TEmpty v @@ x :~: v
 tApplyEmpty = Refl
 
-tUpdateEq :: forall (a :: Type) (m :: PTotalMap a) (x :: Symbol) (v :: a).
+tUpdateEq :: forall a (m :: PTotalMap a) (x :: Symbol) (v :: a).
              m & '[x :-> v] @@ x :~: v
 tUpdateEq = Refl
 
@@ -105,13 +106,13 @@ sCompare' s1 s2 eqCase ltCase gtCase =
     SGT -> gtCase Refl
     SEQ -> eqCase (axiom @s1 @s2)
 
-tUpdateNeq :: forall (a :: Type) (v :: a) (x1 :: Symbol) (x2 :: Symbol) (m :: PTotalMap a).
+tUpdateNeq :: forall a (v :: a) (x1 :: Symbol) (x2 :: Symbol) (m :: PTotalMap a).
               Sing x1 -> Sing x2
            -> x1 :/: x2 -> (m & '[x1 :-> v]) @@ x2 :~: m @@ x2
 tUpdateNeq sx1 sx2 ne12
   = sCompare' sx1 sx2 (absurd . ne12) (\Refl -> Refl) (\Refl -> Refl)
 
-tUpdateShadow :: forall (a :: Type) (m :: PTotalMap a) (v1 :: a) (v2 :: a) (x :: Symbol).
+tUpdateShadow :: forall a (m :: PTotalMap a) (v1 :: a) (v2 :: a) (x :: Symbol).
                  Sing x
               -> m & '[x :-> v1, x :-> v2] :~: m & '[x :-> v2]
 tUpdateShadow sx = funExt go
@@ -140,7 +141,7 @@ beqSymbolP :: forall (x :: Symbol) (y :: Symbol).
            -> Reflect (x :~: y) (BeqSymbol x y)
 beqSymbolP sx sy = iffReflect (sx `sBeqSymbol` sy) $ swap $ beqSymbolTrueIff sx sy
 
-tUpdateSame :: forall (a :: Type) (x :: Symbol) (m :: PTotalMap a).
+tUpdateSame :: forall a (x :: Symbol) (m :: PTotalMap a).
                Sing x
             -> m & '[x :-> m @@ x] :~: m
 tUpdateSame sx1 = funExt go
@@ -151,7 +152,7 @@ tUpdateSame sx1 = funExt go
                ReflectT Refl -> Refl
                ReflectF _    -> Refl
 
-tUpdatePermute :: forall (a :: Type) (v1 :: a) (v2 :: a)
+tUpdatePermute :: forall a (v1 :: a) (v2 :: a)
                          (x1 :: Symbol) (x2 :: Symbol) (m :: PTotalMap a).
                   Sing x1 -> Sing x2
                -> x2 :/: x1

@@ -17,7 +17,7 @@ import Data.Type.Equality
 import SF.LF.IndProp
 import SF.LF.Logic
 
-type Relation' (p :: Type ~> Type ~> Type) (x :: Type) = p @@ x @@ (p @@ x @@ Prop)
+type Relation' (p :: Type ~> Type ~> Type) x = p @@ x @@ (p @@ x @@ Prop)
 type Relation  x = Relation' (TyCon2 (->)) x
 type PRelation x = Relation' (~>@#@$)      x
 
@@ -148,30 +148,30 @@ type Order (r :: PRelation x) =
 type Preorder (r :: PRelation x) =
   Reflexive r /\ Transitive r
 
-data ClosReflTrans :: forall (a :: Type). PRelation a -> a -> a -> Prop where
+data ClosReflTrans :: forall a. PRelation a -> a -> a -> Prop where
   RTStep  :: r @@ x @@ y -> ClosReflTrans r x y
   RTRefl  :: ClosReflTrans r x x
   RTTrans :: ClosReflTrans r x y
           -> ClosReflTrans r y z
           -> ClosReflTrans r x z
 
-data ClosReflTrans1n :: forall (a :: Type). PRelation a -> a -> a -> Prop where
+data ClosReflTrans1n :: forall a. PRelation a -> a -> a -> Prop where
   RT1nRefl  :: ClosReflTrans1n r x x
   RT1nTrans :: r @@ x @@ y -> ClosReflTrans1n r y z
             -> ClosReflTrans1n r x z
 
-rscR :: forall (a :: Type) (r :: PRelation a) (x :: a) (y :: a).
+rscR :: forall a (r :: PRelation a) (x :: a) (y :: a).
         r @@ x @@ y -> ClosReflTrans1n r x y
 rscR = flip RT1nTrans RT1nRefl
 
-rscTrans :: forall (a :: Type) (r :: PRelation a) (x :: a) (y :: a) (z :: a).
+rscTrans :: forall a (r :: PRelation a) (x :: a) (y :: a) (z :: a).
             ClosReflTrans1n r x y
          -> ClosReflTrans1n r y z
          -> ClosReflTrans1n r x z
 rscTrans RT1nRefl             crxz = crxz
 rscTrans (RT1nTrans rxw crwy) cryz = RT1nTrans rxw (rscTrans crwy cryz)
 
-rtcRscCoincide :: forall (a :: Type) (r :: PRelation a) (x :: a) (y :: a).
+rtcRscCoincide :: forall a (r :: PRelation a) (x :: a) (y :: a).
                   ClosReflTrans r x y <-> ClosReflTrans1n r x y
 rtcRscCoincide = (nec, suf)
   where

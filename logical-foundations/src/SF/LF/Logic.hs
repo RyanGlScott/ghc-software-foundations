@@ -76,7 +76,7 @@ orDistributesOverAnd = (nec, suf)
     suf (Left p,  _)       = Left p
     suf (Right q, Right r) = Right (q,r)
 
-distNotExists :: forall (x :: Type) (p :: x ~> Prop).
+distNotExists :: forall x (p :: x ~> Prop).
   (forall xx. p @@ xx) -> Not (Sigma x (NotSym0 .@#@$$$ p))
 distNotExists px ((_ :: Sing xx) :&: npx) = npx (px @xx)
 
@@ -84,7 +84,7 @@ type POrQ (p :: x ~> Prop) (q :: x ~> Prop) (xx :: x)
   = (p @@ xx) \/ (q @@ xx)
 $(genDefunSymbols [''POrQ])
 
-distExistsOr :: forall (x :: Type) (p :: x ~> Prop) (q :: x ~> Prop).
+distExistsOr :: forall x (p :: x ~> Prop) (q :: x ~> Prop).
                 Sigma x (POrQSym2 p q) <-> Sigma x p \/ Sigma x q
 distExistsOr = (nec, suf)
   where
@@ -105,8 +105,7 @@ type InAppIffAux (f :: a ~> b) (l :: [a]) (y :: b) (x :: a)
   = f @@ x :~: y /\ In x l
 $(genDefunSymbols [''InAppIffAux])
 
-inMapIff :: forall (a :: Type) (b :: Type)
-                   (f :: a ~> b) (l :: [a]) (y :: b).
+inMapIff :: forall a b (f :: a ~> b) (l :: [a]) (y :: b).
             Sing f -> Sing l -> Sing y
          -> In y (Map f l) <-> Sigma a (InAppIffAuxSym3 f l y)
 inMapIff _ sL _ = (nec sL, suf sL)
@@ -127,7 +126,7 @@ inMapIff _ sL _ = (nec sL, suf sL)
     suf (SCons _ sls) (hm :&: (Refl, Right i'))
       = Right $ suf sls (hm :&: (Refl, i'))
 
-inAppIff :: forall (a :: Type) (l :: [a]) (l' :: [a]) (aa :: a).
+inAppIff :: forall a (l :: [a]) (l' :: [a]) (aa :: a).
             Sing l -> Sing l' -> Sing aa
          -> In aa (l ++ l') <-> In aa l \/ In aa l'
 inAppIff sL _ _ = (nec sL, suf sL)
@@ -160,7 +159,7 @@ type family All (p :: t ~> Prop) (l :: [t]) :: Prop where
 
 -- Must chunk up to avoid impredicativity
 
-allIn1 :: forall (t :: Type) (p :: t ~> Prop) (l :: [t]).
+allIn1 :: forall t (p :: t ~> Prop) (l :: [t]).
           Sing p -> Sing l
           -- That Proxy is ugly, but I don't know how to avoid it...
        -> (forall z. Proxy z -> In z l -> p @@ z) -> All p l
@@ -176,7 +175,7 @@ allIn1 sP (SCons (_ :: Sing x) (sls :: Sing xs)) ip = (px, apx)
     wat :: forall z. Proxy z -> In z xs -> p @@ z
     wat p = ip @z p . Right
 
-allIn2 :: forall (t :: Type) (p :: t ~> Prop) (l :: [t]) (z :: t).
+allIn2 :: forall t (p :: t ~> Prop) (l :: [t]) (z :: t).
           Sing p -> Sing l
        -> All p l
        -> In z l -> p @@ z
@@ -222,7 +221,7 @@ $(singletons [d|
   trRev l = revAppend l []
   |])
 
-trRevCorrect :: forall (a :: Type) (x :: [a]). Sing x
+trRevCorrect :: forall a (x :: [a]). Sing x
              -> TrRev x :~: Rev x
 trRevCorrect SNil = Refl
 trRevCorrect (SCons sl sls)
@@ -322,7 +321,7 @@ $(singletons [d|
   beqList f (x:xs) (y:ys) = f x y && beqList f xs ys
   |])
 
-beqListTrueIff :: forall (a :: Type) (beq :: a ~> a ~> Bool).
+beqListTrueIff :: forall a (beq :: a ~> a ~> Bool).
                   Sing beq
                -> (forall (a1 :: a) (a2 :: a).
                       Sing a1 -> Sing a2
@@ -359,7 +358,7 @@ beqListTrueIff sBeq flurb sl1 sl2 = (nec sl1 sl2, suf sl1 sl2)
 type FTIAux (test :: x ~> Bool) (a :: x) = test @@ a :~: True
 $(genDefunSymbols [''FTIAux])
 
-forallbTrueIff :: forall (x :: Type) (test :: x ~> Bool) (l :: [x]).
+forallbTrueIff :: forall x (test :: x ~> Bool) (l :: [x]).
                   Sing test -> Sing l
                -> Forallb test l :~: True <-> All (FTIAuxSym1 test) l
 forallbTrueIff sTest sl = (nec sl, suf sl)
@@ -382,7 +381,7 @@ excludedMiddleIrrefutable :: forall (p :: Prop).
   Not (Not (Either p (Not p)))
 excludedMiddleIrrefutable nne = nne $ Right $ nne . Left
 
-notExistsDist :: forall (x :: Type) (p :: x ~> Prop) (xx :: x). SingI xx =>
+notExistsDist :: forall x (p :: x ~> Prop) (xx :: x). SingI xx =>
                  ExcludedMiddle -> Not (Sigma x (NotSym0 .@#@$$$ p))
               -> p @@ xx
 notExistsDist excludedMiddle ns =

@@ -8,7 +8,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Ryan Scott
 maintainer:          Ryan Scott <ryan.gl.scott@gmail.com>
-copyright:           (C) 2018 Ryan Scott
+copyright:           (C) 2018-2019 Ryan Scott
 stability:           Experimental
 category:            Dependent Types
 build-type:          Simple
@@ -36,6 +36,7 @@ library
                        SF.LF.Imp
                        SF.LF.ImpC
   other-modules:       SF.LF.Axiom
+                       SF.LF.FunExt
   build-depends:       base           >= 4.12  && < 4.13
                      , eliminators    >= 0.5   && < 0.6
                      , singletons     >= 2.5   && < 2.6

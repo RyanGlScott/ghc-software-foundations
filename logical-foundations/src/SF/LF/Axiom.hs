@@ -1,21 +1,15 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeOperators #-}
 module SF.LF.Axiom where
 
-import Data.Kind
-import Data.Singletons
 import Data.Type.Equality
 import Unsafe.Coerce
 
--- | Use with care.
+-- | Assert an equality to be true. Ideally, this wouldn't be necessary, but
+-- alas, there are certain points in the code where GHC's typechecker isn't
+-- quite smart enough to figure certain things out, so this is our escape
+-- hatch.
+--
+-- This can break type safety if wielded improperly. Use with care.
 axiom :: a :~: b
 axiom = unsafeCoerce Refl
-
--- | Use with care.
-funExt :: forall (a :: Type) (b :: Type)
-                 (f :: a ~> b) (g :: a ~> b).
-          (forall (x :: a). Sing x -> f @@ x :~: g @@ x)
-       -> f :~: g
-funExt _ = axiom

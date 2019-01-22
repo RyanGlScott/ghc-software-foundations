@@ -31,7 +31,7 @@ import Prelude hiding (Eq(..), Ord(..))
 import SF.LF.Basics
 import SF.LF.Maps
 
-data AExp' (sym :: Type)
+data AExp' sym
   = ANum Nat
   | AId sym
   | APlus  (AExp' sym) (AExp' sym)
@@ -46,7 +46,7 @@ data instance Sing :: AExp -> Type where
   SAMinus :: Sing a1 -> Sing a2 -> Sing (AMinus a1 a2 :: AExp)
   SAMult  :: Sing a1 -> Sing a2 -> Sing (AMult a1 a2 :: AExp)
 
-data BExp' (sym :: Type)
+data BExp' sym
   = BTrue
   | BFalse
   | BEq  (AExp' sym) (AExp' sym)

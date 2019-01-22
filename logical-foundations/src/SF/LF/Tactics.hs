@@ -11,7 +11,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module SF.LF.Tactics where
 
-import Data.Kind
 import Data.Nat
 import Data.Singletons.Prelude
 import Data.Singletons.Prelude.List (Filter)
@@ -40,14 +39,14 @@ transEqExercise :: forall (n :: Nat) (m :: Nat) (o :: Nat) (p :: Nat).
                 -> (n + p) :~: Minustwo o
 transEqExercise _ _ _ _ Refl Refl = Refl
 
-inversionEx3 :: forall (x :: Type) (xx :: x) (yy :: x) (zz :: x)
+inversionEx3 :: forall x (xx :: x) (yy :: x) (zz :: x)
                        (l :: [x]) (j :: [x]).
                 (xx:yy:l) :~: (zz:j)
              -> (yy:l) :~: (xx:j)
              -> xx :~: yy
 inversionEx3 _ Refl = Refl
 
-inversionEx6 :: forall (x :: Type) (xx :: x) (yy :: x) (zz :: x)
+inversionEx6 :: forall x (xx :: x) (yy :: x) (zz :: x)
                        (l :: [x]) (j :: [x]).
                 (xx:yy:l) :~: '[]
              -> (yy:l) :~: (zz:j)
@@ -81,7 +80,7 @@ beqNatTrue (SS sn') sm Refl =
     SS sm' | Refl <- beqNatTrue sn' sm' Refl
            -> Refl
 
-nthErrorAfterLast :: forall (n :: Nat) (x :: Type) (l :: [x]).
+nthErrorAfterLast :: forall (n :: Nat) x (l :: [x]).
                      Sing l
                   -> Length l :~: n
                   -> NthError l n :~: None
@@ -92,7 +91,7 @@ nthErrorAfterLast (SCons _ sxs) Refl | Refl <- nthErrorAfterLast sxs Refl
 -- TODO RGS
 
 {-
-combineSplit :: forall (x :: Type) (y :: Type) (l :: [(x,y)])
+combineSplit :: forall x y (l :: [(x,y)])
                        (l1 :: [x]) (l2 :: [y]).
                 Sing l -> Sing l1 -> Sing l2
              -> Split l :~: '(l1, l2)
@@ -157,7 +156,7 @@ beqNatTrans (SS sn') (SS sm') (SS sp') Refl Refl
 splitCombineStatement ::
 -}
 
-filterExercise :: forall (x :: Type) (test :: x ~> Bool)
+filterExercise :: forall x (test :: x ~> Bool)
                          (xx :: x) (l :: [x]) (lf :: [x]).
                   Sing test -> Sing l
                -> Filter test l :~: (xx:lf)
@@ -180,7 +179,7 @@ $(singletons [d|
   existsb' p = not . forallb (not . p)
   |])
 
-existsbExistsb' :: forall (a :: Type) (p :: a ~> Bool) (l :: [a]).
+existsbExistsb' :: forall a (p :: a ~> Bool) (l :: [a]).
                    Sing p -> Sing l
                 -> Existsb' p l :~: Existsb p l
 existsbExistsb' _  SNil = Refl

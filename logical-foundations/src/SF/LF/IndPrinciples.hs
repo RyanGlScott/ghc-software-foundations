@@ -67,7 +67,7 @@ data instance Sing :: forall a b. PFoo a b -> Type where
   SBar  :: Sing x -> Sing (Bar x  :: PFoo a b)
   SBaz  :: Sing y -> Sing (Baz y  :: PFoo a b)
   SQuux :: Sing f -> Sing (Quux f :: PFoo a b)
-fooInd :: forall (x :: Type) (y :: Type) (p :: PFoo x y ~> Prop) (f :: PFoo x y).
+fooInd :: forall x y (p :: PFoo x y ~> Prop) (f :: PFoo x y).
           Sing f
        -> (forall (xx :: x). Sing xx -> p @@ Bar xx)
        -> (forall (yy :: y). Sing yy -> p @@ Baz yy)

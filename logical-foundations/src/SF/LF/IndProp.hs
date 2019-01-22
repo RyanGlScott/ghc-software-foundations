@@ -297,7 +297,7 @@ $(singletons [d|
     Star     :: RegExp t -> RegExp t
   |])
 
-data ExpMatch :: forall (t :: Type). [t] -> RegExp t -> Prop where
+data ExpMatch :: forall t. [t] -> RegExp t -> Prop where
   MEmpty   :: ExpMatch '[] EmptyStr
   MChar    :: ExpMatch '[x] ('Char x)
   MApp     :: Sing s1 -> Sing s2
@@ -318,17 +318,17 @@ type (=~) = ExpMatch
 infix 4 =~
 $(genDefunSymbols [''(=~)])
 
-emptyIsEmpty :: forall (t :: Type) (s :: [t]).
+emptyIsEmpty :: forall t (s :: [t]).
                 Not (s =~ EmptySet)
 emptyIsEmpty x = case x of {}
 
-mUnion' :: forall (t :: Type) (s :: [t]) (re1 :: RegExp t) (re2 :: RegExp t).
+mUnion' :: forall t (s :: [t]) (re1 :: RegExp t) (re2 :: RegExp t).
            s =~ re1 \/ s =~ re2
         -> s =~ Union re1 re2
 mUnion' = either MUnionL MUnionR
 
 
-mStar' :: forall (t :: Type) (ss :: [[t]]) (re :: RegExp t).
+mStar' :: forall t (ss :: [[t]]) (re :: RegExp t).
           Sing ss -> Sing re
        -> (forall (s :: [t]). In s ss -> s =~ re)
        -> Fold (++@#@$) ss '[] =~ Star re
@@ -344,7 +344,7 @@ $(singletons [d|
   regExpOfList (x:l') = App (Char x) (regExpOfList l')
   |])
 
-regExpOfListSpec :: forall (t :: Type) (s1 :: [t]) (s2 :: [t]).
+regExpOfListSpec :: forall t (s1 :: [t]) (s2 :: [t]).
                     Sing s1 -> Sing s2
                  -> s1 =~ RegExpOfList s2 <-> s1 :~: s2
 regExpOfListSpec s1 s2 = (nec s1 s2, suf s1 s2)
@@ -376,7 +376,7 @@ $(singletons [d|
   reNotEmpty (Star _)        = True
   |])
 
-reNotEmptyCorrect :: forall (t :: Type) (re :: RegExp t). Sing re
+reNotEmptyCorrect :: forall t (re :: RegExp t). Sing re
                   -> Sigma [t] (FlipSym2 (TyCon2 (=~)) re) <-> ReNotEmpty re :~: True
 reNotEmptyCorrect sre = (nec sre, suf sre)
   where
@@ -422,7 +422,7 @@ newtype MStar''Aux2 (re :: RegExp t) (ss :: [[t]])
   = MkMStar''Aux2 { runMStar''Aux2 :: forall (s' :: [t]). In s' ss -> s' =~ re }
 $(genDefunSymbols [''MStar''Aux1])
 
-mStar'' :: forall (t :: Type) (s :: [t]) (re :: RegExp t).
+mStar'' :: forall t (s :: [t]) (re :: RegExp t).
            Sing re
         -> s =~ Star re
         -> Sigma [[t]] (MStar''Aux1Sym2 s re)
@@ -452,7 +452,7 @@ $(singletons [d|
   napp (S n') l = l ++ napp n' l
   |])
 
-nappPlus :: forall (t :: Type) (n :: Nat) (m :: Nat) (l :: [t]).
+nappPlus :: forall t (n :: Nat) (m :: Nat) (l :: [t]).
             Sing n -> Sing m -> Sing l
          -> Napp (n + m) l :~: Napp n l ++ Napp m l
 nappPlus SZ _ _ = Refl
@@ -471,7 +471,7 @@ newtype PumpingAux2 (re :: RegExp t) (s1 :: [t]) (s2 :: [t]) (s3 :: [t])
 $(genDefunSymbols [''PumpingAux1])
 
 {-
-pumping :: forall (t :: Type) (re :: RegExp t) (s :: [t]).
+pumping :: forall t (re :: RegExp t) (s :: [t]).
            Sing re
         -> s =~ re
         -> PumpingConstant re <= Length s
@@ -549,7 +549,7 @@ beqNatPPractice sn (SCons sx sxs) Refl i
           Left Refl -> ne Refl
           Right i' -> beqNatPPractice sn sxs Refl i'
 
-data Nostutter :: forall (x :: Type). [x] -> Prop where
+data Nostutter :: forall x. [x] -> Prop where
   NSNil       :: Nostutter '[]
   NSSingleton :: Nostutter '[x]
   NSCons      :: x :/: y -> Nostutter (y:zs) -> Nostutter (x:y:zs)
@@ -576,12 +576,12 @@ testNostutter3 = NSSingleton
 testNostutter4 :: Not (Nostutter (Map LitSym0 '[3,1,1,4]))
 testNostutter4 (NSCons _ (NSCons ne11 _)) = ne11 Refl
 
-data InOrderMerge :: forall (x :: Type). [x] -> [x] -> [x] -> Prop where
+data InOrderMerge :: forall x. [x] -> [x] -> [x] -> Prop where
   IOMNil   :: InOrderMerge '[] '[] '[]
   IOMCons1 :: InOrderMerge l l1 l2 -> InOrderMerge (x:l) (x:l1) l2
   IOMCons2 :: InOrderMerge l l1 l2 -> InOrderMerge (y:l) l1 (y:l2)
 
-filterChallenge :: forall (x :: Type) (test :: x ~> Bool)
+filterChallenge :: forall x (test :: x ~> Bool)
                    (l :: [x]) (l1 :: [x]) (l2 :: [x]).
                    Sing test -> Sing l
                 -> InOrderMerge l l1 l2
@@ -606,20 +606,20 @@ filterChallenge stest (SCons sx sxs) (IOMCons2 iom) Refl Refl
 filterChallenge2
 -}
 
-data Pal :: forall (x :: Type). [x] -> Prop where
+data Pal :: forall x. [x] -> Prop where
   PalNil       :: Pal '[]
   PalSingleton :: Pal '[x]
   PalPad       :: Sing a -> Sing b
                -> Pal b -> Pal (a:b ++ '[a])
 
-palAppRev :: forall (x :: Type) (l :: [x]).
+palAppRev :: forall x (l :: [x]).
              Sing l -> Pal (l ++ Rev l)
 palAppRev SNil = PalNil
 palAppRev (SCons sx sxs)
   | Refl <- appAssoc sxs (sRev sxs) (SCons sx SNil)
   = PalPad sx (sxs %++ sRev sxs) (palAppRev sxs)
 
-palRev :: forall (x :: Type) (l :: [x]).
+palRev :: forall x (l :: [x]).
           Pal l -> l :~: Rev l
 palRev PalNil       = Refl
 palRev PalSingleton = Refl
@@ -631,7 +631,7 @@ palRev (PalPad (sa :: Sing a) (sb :: Sing b) p)
 {-
 -- TODO RGS
 
-palindromeConverse :: forall (x :: Type) (l :: [x]).
+palindromeConverse :: forall x (l :: [x]).
                       Sing l
                    -> l :~: Rev l -> Pal l
 palindromeConverse SNil Refl = PalNil
@@ -640,12 +640,12 @@ palindromeConverse (SCons (_ :: Sing x) (SCons (_ :: Sing y) (sxs :: Sing zs))) 
   = case palindromeConverse sxs Refl of
 -}
 
-data Disjoint :: forall (x :: Type). [x] -> [x] -> Prop where
+data Disjoint :: forall x. [x] -> [x] -> Prop where
   DJNil   :: Disjoint '[] '[]
   DJCons1 :: Not (In x l2) -> Disjoint l1 l2 -> Disjoint (x:l1) l2
   DJCons2 :: Not (In y l1) -> Disjoint l1 l2 -> Disjoint l1 (y:l2)
 
-data NoDup :: forall (x :: Type). [x] -> Prop where
+data NoDup :: forall x. [x] -> Prop where
   NDNil  :: NoDup '[]
   NDCons :: Sing x -> Not (In x l) -> NoDup l -> NoDup (x:l)
 
@@ -653,7 +653,7 @@ type family NoDupThmAux (l :: [x]) (p :: ([x], [x])) :: Type where
   NoDupThmAux l '(l1, l2) = (l :~: l1 ++ l2) /\ Disjoint l1 l2
 $(genDefunSymbols [''NoDupThmAux])
 
-noDupThm :: forall (x :: Type) (l :: [x]).
+noDupThm :: forall x (l :: [x]).
             NoDup l
          -> Sigma ([x], [x]) (NoDupThmAuxSym1 l)
 noDupThm NDNil = STuple2 SNil SNil :&: (Refl, DJNil)

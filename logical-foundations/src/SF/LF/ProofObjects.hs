@@ -37,11 +37,11 @@ exEvSn :: Ex Nat (TyCon1 Ev .@#@$$$ TyCon1 S)
 exEvSn = SS SZ :&: EvSS Ev0
 
 equalityLeibnizEquality
-  :: forall (x :: Type) (xx :: x) (yy :: x).
+  :: forall x (xx :: x) (yy :: x).
      xx :~: yy -> (forall (p :: x ~> Prop). p @@ xx -> p @@ yy)
 equalityLeibnizEquality Refl = id
 
 leibnizEqualityEquality
-  :: forall (x :: Type) (xx :: x) (yy :: x).
+  :: forall x (xx :: x) (yy :: x).
      (forall (p :: x ~> Prop). p @@ xx -> p @@ yy) -> xx :~: yy
 leibnizEqualityEquality f = f @(TyCon1 ((:~:) xx)) Refl
