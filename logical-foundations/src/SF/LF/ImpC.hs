@@ -8,6 +8,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -26,7 +27,6 @@ import Data.Singletons.TH (genDefunSymbols, singletonsOnly)
 import Data.String (IsString(..))
 import Data.Text (Text)
 import Data.Type.Equality ((:~:)(..))
-import GHC.TypeLits (Symbol)
 import Prelude hiding (Eq(..), Ord(..))
 import SF.LF.Basics
 import SF.LF.Maps

@@ -19,7 +19,6 @@ module SF.LF.IndProp where
 import Data.Kind
 import Data.Nat
 import Data.Singletons.Prelude hiding (Not, POrd(..))
-import Data.Singletons.Prelude.List (Filter)
 import Data.Singletons.Sigma
 import Data.Singletons.TH (genDefunSymbols, singletons)
 import Data.Tuple

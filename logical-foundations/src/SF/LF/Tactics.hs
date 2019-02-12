@@ -13,7 +13,6 @@ module SF.LF.Tactics where
 
 import Data.Nat
 import Data.Singletons.Prelude
-import Data.Singletons.Prelude.List (Filter)
 import Data.Singletons.TH (singletons)
 import Data.Type.Equality ((:~:)(..))
 import SF.LF.Basics
