@@ -74,3 +74,4 @@ funExt3 fun
 -- @
 apply :: f :~: g -> a :~: b -> Apply f a :~: Apply g b
 apply Refl Refl = Refl
+{-# NOINLINE apply #-} -- #16310

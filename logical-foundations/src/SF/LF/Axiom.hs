@@ -1,4 +1,6 @@
 {-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 module SF.LF.Axiom where
 
@@ -11,5 +13,5 @@ import Unsafe.Coerce
 -- hatch.
 --
 -- This can break type safety if wielded improperly. Use with care.
-axiom :: a :~: b
-axiom = unsafeCoerce Refl
+axiom :: forall a b. a :~: b
+axiom = unsafeCoerce (Refl @a)
