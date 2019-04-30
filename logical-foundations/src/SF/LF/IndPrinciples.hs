@@ -63,10 +63,11 @@ data Foo_ (p :: Type ~> Type ~> Type) x y
   | Quux (p @@ Nat @@ Foo_ p x y)
 type Foo  = Foo_ (TyCon2 (->))
 type PFoo = Foo_ (~>@#@$)
-data instance Sing :: forall a b. PFoo a b -> Type where
-  SBar  :: Sing x -> Sing (Bar x  :: PFoo a b)
-  SBaz  :: Sing y -> Sing (Baz y  :: PFoo a b)
-  SQuux :: Sing f -> Sing (Quux f :: PFoo a b)
+data SFoo :: forall a b. PFoo a b -> Type where
+  SBar  :: Sing x -> SFoo (Bar x)
+  SBaz  :: Sing y -> SFoo (Baz y)
+  SQuux :: Sing f -> SFoo (Quux f)
+type instance Sing = SFoo
 fooInd :: forall x y (p :: PFoo x y ~> Prop) (f :: PFoo x y).
           Sing f
        -> (forall (xx :: x). Sing xx -> p @@ Bar xx)

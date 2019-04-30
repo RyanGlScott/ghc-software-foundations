@@ -39,12 +39,13 @@ data AExp' sym
   | AMult  (AExp' sym) (AExp' sym)
 type DAExp = AExp' Text
 type AExp  = AExp' Symbol
-data instance Sing :: AExp -> Type where
-  SANum   :: Sing n -> Sing (ANum n :: AExp)
-  SAId    :: Sing s -> Sing (AId s :: AExp)
-  SAPlus  :: Sing a1 -> Sing a2 -> Sing (APlus a1 a2 :: AExp)
-  SAMinus :: Sing a1 -> Sing a2 -> Sing (AMinus a1 a2 :: AExp)
-  SAMult  :: Sing a1 -> Sing a2 -> Sing (AMult a1 a2 :: AExp)
+data SAExp :: AExp -> Type where
+  SANum   :: Sing n -> SAExp (ANum n)
+  SAId    :: Sing s -> SAExp (AId s)
+  SAPlus  :: Sing a1 -> Sing a2 -> SAExp (APlus a1 a2)
+  SAMinus :: Sing a1 -> Sing a2 -> SAExp (AMinus a1 a2)
+  SAMult  :: Sing a1 -> Sing a2 -> SAExp (AMult a1 a2)
+type instance Sing = SAExp
 
 data BExp' sym
   = BTrue
@@ -55,13 +56,14 @@ data BExp' sym
   | BAnd (BExp' sym) (BExp' sym)
 type DBExp = BExp' Text
 type BExp  = BExp' Symbol
-data instance Sing :: BExp -> Type where
-  SBTrue  :: Sing (BTrue  :: BExp)
-  SBFalse :: Sing (BFalse :: BExp)
-  SBEq    :: Sing a1 -> Sing a2 -> Sing (BEq a1 a2 :: BExp)
-  SBLe    :: Sing a1 -> Sing a2 -> Sing (BLe a1 a2 :: BExp)
-  SBNot   :: Sing b1 -> Sing (BNot b1 :: BExp)
-  SBAnd   :: Sing b1 -> Sing b2 -> Sing (BAnd b1 b2 :: BExp)
+data SBExp :: BExp -> Type where
+  SBTrue  :: SBExp BTrue
+  SBFalse :: SBExp BFalse
+  SBEq    :: Sing a1 -> Sing a2 -> SBExp (BEq a1 a2)
+  SBLe    :: Sing a1 -> Sing a2 -> SBExp (BLe a1 a2)
+  SBNot   :: Sing b1 -> SBExp (BNot b1)
+  SBAnd   :: Sing b1 -> Sing b2 -> SBExp (BAnd b1 b2)
+type instance Sing = SBExp
 
 $(genDefunSymbols [''AExp', ''BExp'])
 

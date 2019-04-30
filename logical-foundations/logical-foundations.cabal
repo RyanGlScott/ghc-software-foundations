@@ -14,8 +14,7 @@ category:            Dependent Types
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
-tested-with:         GHC == 8.6.5
-                   , GHC == 8.8.1
+tested-with:         GHC == 8.8.1
 
 source-repository head
   type:     git
@@ -38,9 +37,9 @@ library
                        SF.LF.ImpC
   other-modules:       SF.LF.Axiom
                        SF.LF.FunExt
-  build-depends:       base           >= 4.12  && < 4.13
-                     , eliminators    >= 0.5   && < 0.6
-                     , singletons     >= 2.5   && < 2.6
+  build-depends:       base           >= 4.13  && < 4.14
+                     , eliminators    >= 0.6   && < 0.7
+                     , singletons     >= 2.6   && < 2.7
                      , singleton-nats >= 0.4.2 && < 0.5
                      , text
   hs-source-dirs:      src
