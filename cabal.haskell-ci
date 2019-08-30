@@ -2,4 +2,3 @@ ghc-head:               True
 no-tests-no-benchmarks: False
 unconstrained:          False
 local-ghc-options:      -Werror
-head-hackage:           >=8.8
