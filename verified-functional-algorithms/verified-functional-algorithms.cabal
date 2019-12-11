@@ -14,7 +14,7 @@ category:            Dependent Types
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
-tested-with:         GHC == 8.8.1
+tested-with:         GHC == 8.10.1
 
 source-repository head
   type:     git
@@ -23,9 +23,9 @@ source-repository head
 
 library
   exposed-modules:     SF.VFA.Perm
-  build-depends:       base                >= 4.13 && < 4.14
+  build-depends:       base                >= 4.14 && < 4.15
                      , logical-foundations >= 0.1  && < 0.2
-                     , singletons          >= 2.6  && < 2.7
+                     , singletons          >= 2.7  && < 2.8
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall -Wcompat -Wno-unticked-promoted-constructors

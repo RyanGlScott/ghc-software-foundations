@@ -6,6 +6,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -37,10 +38,12 @@ plusOneR' sn = elimNat @PlusOneR'AuxSym0 sn base step
     step _ Refl = Refl
 
 $(singletons [d| data YesNo = Yes | No |])
-$(deriveElim ''YesNo)
+$(deriveElim     ''YesNo)
+$(deriveTypeElim ''YesNo)
 
 $(singletons [d| data RGB = Red | Green | Blue |])
-$(deriveElim ''RGB)
+$(deriveElim     ''RGB)
+$(deriveTypeElim ''RGB)
 
 $(singletons [d| data NatList1 = NNil1 | NSnoc1 NatList1 Nat |])
 $(deriveElim ''NatList1)
@@ -49,7 +52,8 @@ $(singletons [d| data BynTree = BEmpty | BLeaf YesNo | NBranch YesNo BynTree Byn
 $(deriveElim ''BynTree)
 
 $(singletons [d| data ExSet = Con1 Bool | Con2 Nat ExSet |])
-$(deriveElim ''ExSet)
+$(deriveElim     ''ExSet)
+$(deriveTypeElim ''ExSet)
 
 $(singletons [d| data Tree x = Leaf x | Node (Tree x) (Tree x) |])
 $(deriveElim ''Tree)
@@ -83,7 +87,8 @@ fooInd (SQuux (sf :: Sing f1)) pBar pBaz pQuux =
   pQuux sf $ \(sn :: Sing n) -> fooInd @x @y @p @(f1 @@ n) (sf @@ sn) pBar pBaz pQuux
 
 $(singletons [d| data Foo' x = C1 [x] (Foo' x) | C2 (Foo' x) |])
-$(deriveElim ''Foo')
+$(deriveElim     ''Foo')
+$(deriveTypeElim ''Foo')
 
 type PlusAssoc'Aux (m :: Nat) (p :: Nat) (n :: Nat) = n + (m + p) :~: (n + m) + p
 $(genDefunSymbols [''PlusAssoc'Aux])
