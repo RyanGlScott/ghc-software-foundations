@@ -15,12 +15,12 @@
 module SF.LF.Maps where
 
 import Data.Kind
-import Data.Singletons.Prelude
 import Data.Singletons.TH
 import Data.Text (Text)
 import Data.Tuple
 import Data.Void
 import GHC.TypeLits (CmpSymbol)
+import Prelude.Singletons
 import SF.LF.Axiom
 import SF.LF.FunExt
 import SF.LF.IndProp

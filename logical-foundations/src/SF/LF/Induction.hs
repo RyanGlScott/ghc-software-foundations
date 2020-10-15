@@ -12,9 +12,9 @@
 module SF.LF.Induction where
 
 import Data.Nat
-import Data.Singletons.Prelude
 import Data.Singletons.TH
 import Prelude hiding (Double)
+import Prelude.Singletons
 
 mult0R :: forall (n :: Nat). Sing n -> n * Lit 0 :~: Lit 0
 mult0R SZ = Refl

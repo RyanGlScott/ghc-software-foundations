@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneKindSignatures #-}
@@ -12,9 +13,9 @@
 module SF.LF.Lists where
 
 import Data.Nat
-import Data.Singletons.Prelude hiding (Id, IdSym0, IdSym1)
-import Data.Singletons.Prelude.Tuple
 import Data.Singletons.TH
+import Data.Tuple.Singletons
+import Prelude.Singletons hiding (Id, IdSym0, IdSym1)
 import SF.LF.Basics
 import SF.LF.Induction
 

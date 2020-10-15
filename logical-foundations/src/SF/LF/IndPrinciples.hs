@@ -18,8 +18,8 @@ import Data.Eliminator
 import Data.Eliminator.TH
 import Data.Kind
 import Data.Nat
-import Data.Singletons.Prelude
 import Data.Singletons.TH
+import Prelude.Singletons
 import SF.LF.Logic
 
 type PlusOneR'Aux (n :: Nat) = n + Lit 1 :~: S n

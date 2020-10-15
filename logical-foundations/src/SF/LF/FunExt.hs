@@ -11,7 +11,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module SF.LF.FunExt where
 
-import Data.Singletons.TH
+import Data.Singletons.Base.TH
 import SF.LF.Axiom
 
 -- | A witness to the principle of function extensionality; that is, two

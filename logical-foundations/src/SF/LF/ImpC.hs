@@ -17,18 +17,18 @@ module SF.LF.ImpC where
 
 import Data.Kind (Type)
 import Data.Nat
-import Data.Singletons.Prelude
+import Data.Singletons.TH (genDefunSymbols, singletonsOnly)
+import Data.String (IsString(..))
+import Data.String.Singletons
+import Data.Text (Text)
+import Data.Type.Equality ((:~:)(..))
+import Prelude hiding (Eq(..), Ord(..))
+import Prelude.Singletons
   hiding ( PEq(..), SEq(..), POrd(..), SOrd(..), type (&&), (%&&)
          , type (==@#@$), type (==@#@$$), type (==@#@$$$)
          , type (&&@#@$), type (&&@#@$$), type (&&@#@$$$)
          , type (<=@#@$), type (<=@#@$$), type (<=@#@$$$)
          )
-import Data.Singletons.Prelude.IsString
-import Data.Singletons.TH (genDefunSymbols, singletonsOnly)
-import Data.String (IsString(..))
-import Data.Text (Text)
-import Data.Type.Equality ((:~:)(..))
-import Prelude hiding (Eq(..), Ord(..))
 import SF.LF.Basics
 import SF.LF.Maps
 

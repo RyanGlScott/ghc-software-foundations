@@ -15,12 +15,12 @@ module SF.LF.Logic where
 
 import Data.Kind
 import Data.Nat
-import Data.Singletons.Prelude hiding
-       ( All, AllSym0, AllSym1, AllSym2, Not, NotSym0, NotSym1 )
 import Data.Singletons.Sigma
 import Data.Singletons.TH
 import Data.Void
 import Prelude hiding (Double)
+import Prelude.Singletons hiding
+       ( All, AllSym0, AllSym1, AllSym2, Not, NotSym0, NotSym1 )
 import SF.LF.Induction
 import SF.LF.Poly
 import SF.LF.Tactics

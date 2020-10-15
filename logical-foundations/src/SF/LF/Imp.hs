@@ -15,8 +15,8 @@
 module SF.LF.Imp where
 
 import Data.Nat
-import Data.Singletons.Prelude
 import Data.Singletons.TH
+import Prelude.Singletons
 import SF.LF.Basics
 import SF.LF.Logic hiding (Not, NotSym0)
 

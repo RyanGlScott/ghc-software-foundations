@@ -14,9 +14,9 @@ module SF.LF.ProofObjects where
 
 import Data.Kind
 import Data.Nat
-import Data.Singletons.Prelude
 import Data.Singletons.Sigma
 import Data.Type.Equality
+import Prelude.Singletons
 import SF.LF.IndProp
 import SF.LF.Logic
 

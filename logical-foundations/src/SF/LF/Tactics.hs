@@ -13,9 +13,9 @@
 module SF.LF.Tactics where
 
 import Data.Nat
-import Data.Singletons.Prelude
 import Data.Singletons.TH (singletons)
 import Data.Type.Equality ((:~:)(..))
+import Prelude.Singletons hiding (Length)
 import SF.LF.Basics
 import SF.LF.Induction
 import SF.LF.Poly

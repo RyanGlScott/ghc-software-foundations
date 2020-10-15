@@ -14,16 +14,14 @@
 module SF.LF.Poly where
 
 import Data.Nat
-import Data.Singletons.Prelude hiding
-       ( FoldMap, FoldMapSym0, FoldMapSym1, FoldMapSym2, sFoldMap )
-import Data.Singletons.Prelude.List hiding
+import Data.List.Singletons hiding
        ( Length, LengthSym0, LengthSym1, sLength )
-import Data.Singletons.TH hiding
-       ( Length, sLength
-       , FoldMap, FoldMapSym0, FoldMapSym1, FoldMapSym2, sFoldMap
-       , Fold, sFold )
-import SF.LF.Induction
+import Data.Singletons.TH
 import Prelude hiding (length)
+import Prelude.Singletons hiding
+       ( Length, LengthSym0, LengthSym1, sLength
+       , FoldMap, FoldMapSym0, FoldMapSym1, FoldMapSym2, sFoldMap )
+import SF.LF.Induction
 
 $(singletons [d|
   length :: [a] -> Nat

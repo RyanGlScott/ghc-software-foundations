@@ -5,8 +5,8 @@
 {-# LANGUAGE TypeOperators #-}
 module SF.VFA.Perm where
 
-import Data.Singletons.Prelude
 import Data.Type.Equality
+import Prelude.Singletons
 import SF.LF.Logic
 import SF.LF.Poly
 

@@ -19,7 +19,6 @@ module SF.LF.IndProp where
 
 import Data.Kind
 import Data.Nat
-import Data.Singletons.Prelude hiding (Not, POrd(..))
 import Data.Singletons.Sigma
 import Data.Singletons.TH (genDefunSymbols, singletons)
 import Data.Tuple
@@ -27,6 +26,7 @@ import Data.Type.Equality ((:~:)(..))
 import Data.Void
 import qualified GHC.TypeNats as TN
 import Prelude hiding (Double)
+import Prelude.Singletons hiding (Not, POrd(..))
 import SF.LF.Basics
 import SF.LF.Induction
 import SF.LF.Logic
