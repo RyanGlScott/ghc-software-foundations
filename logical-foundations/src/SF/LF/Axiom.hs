@@ -1,7 +1,3 @@
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE TypeOperators #-}
 module SF.LF.Axiom where
 
 import Data.Type.Equality
