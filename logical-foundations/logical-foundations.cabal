@@ -44,4 +44,4 @@ library
                      , text
   hs-source-dirs:      src
   default-language:    GHC2021
-  ghc-options:         -Wall -Wcompat -Wno-unticked-promoted-constructors
+  ghc-options:         -Wall -Wcompat -Wno-unticked-promoted-constructors -fenable-th-splice-warnings
