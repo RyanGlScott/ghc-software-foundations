@@ -14,7 +14,7 @@ category:            Dependent Types
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
-tested-with:         GHC == 9.6.1
+tested-with:         GHC == 9.8.1
 
 source-repository head
   type:     git
@@ -23,9 +23,9 @@ source-repository head
 
 library
   exposed-modules:     SF.VFA.Perm
-  build-depends:       base                >= 4.18 && < 4.19
+  build-depends:       base                >= 4.19 && < 4.20
                      , logical-foundations >= 0.1  && < 0.2
-                     , singletons-base     >= 3.2  && < 3.3
+                     , singletons-base     >= 3.3  && < 3.4
   hs-source-dirs:      src
   default-language:    GHC2021
   ghc-options:         -Wall -Wcompat -Wno-unticked-promoted-constructors -fenable-th-splice-warnings
