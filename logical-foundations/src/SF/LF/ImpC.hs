@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeAbstractions #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 module SF.LF.ImpC where
@@ -77,9 +78,16 @@ $(singletonsOnly [d|
   (&&) :: BExp -> BExp -> BExp
   (&&) = BAnd
   infixr 3 &&
-  |])
 
-$(singletonsOnly [d|
+  -- NB: Make sure that `ex2` is defined in the same TH splice as (<=) above.
+  -- If they're defined in separate TH splices, then the use of <= in the
+  -- definition of `ex2` will be quoted as `ConE <=` due to
+  -- https://gitlab.haskell.org/ghc/ghc/-/issues/24801, which will make
+  -- singletons-th terribly confused. That GHC bug is only triggered when
+  -- processing the definition of `ex2` with a type-level (<=) name in scope,
+  -- so by putting the definition of (<=) in the same splice, we prevent the
+  -- type-level (<=) name from being in scope until after the splice.
+
   ex1 :: AExp
   ex1 = 3 + ("X" * 2)
 
