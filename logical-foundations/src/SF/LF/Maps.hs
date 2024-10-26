@@ -6,7 +6,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module SF.LF.Maps where
 
-import Data.Kind
 import Data.Singletons.TH
 import Data.Text (Text)
 import Data.Tuple
@@ -18,9 +17,26 @@ import SF.LF.FunExt
 import SF.LF.IndProp
 import SF.LF.Logic
 
-type TotalMap' (p :: Type ~> Type ~> Type) sym a = p @@ sym @@ a
-type TotalMap  a = TotalMap' (TyCon2 (->)) Text   a
-type PTotalMap a = TotalMap' (~>@#@$)      Symbol a
+{-
+It would be cool if we could define TotalMap and PTotalMap in terms of a common
+definition, i.e.,
+
+  type TotalMap' (p :: Type ~> Type ~> Type) sym a = p @@ sym @@ a
+  type TotalMap  a = TotalMap' (TyCon2 (->)) Text   a
+  type PTotalMap a = TotalMap' (~>@#@$)      Symbol a
+
+Sadly, this won't work. If you attempt to defunctionalize TEmpty below,
+singletons-th will generate an Apply instance that looks like this:
+
+  type instance Apply @a @(PTotalMap a) TEmptySym0 x = TEmpty x
+
+GHC will reject this type family instance because the left-hand side of the
+instance contains a nested type family application (PTotalMap, which in turn
+expands to applications of the Apply type family). For this reason, we define
+TotalMap and PTotalMap separately, without any nested type families.
+-}
+type TotalMap  a = Text   -> a
+type PTotalMap a = Symbol ~> a
 
 tEmpty :: a -> TotalMap a
 tEmpty v _ = v
