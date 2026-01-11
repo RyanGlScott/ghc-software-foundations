@@ -14,7 +14,7 @@ category:            Dependent Types
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
-tested-with:         GHC == 9.12.1
+tested-with:         GHC == 9.12.2
 
 source-repository head
   type:     git
